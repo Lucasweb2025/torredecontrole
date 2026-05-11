@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>L.A. Custom - Torre Cloud V27 (Productivity)</title>
+    <title>L.A. Custom - Torre Cloud V27 (Productivity Master)</title>
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
@@ -19,7 +19,7 @@
             --font-main: 'Courier New', Courier, monospace;
         }
 
-        body { background-color: var(--bg-color); color: white; font-family: var(--font-main); margin: 0; padding: 20px; }
+        body { background-color: var(--bg-color); color: white; font-family: var(--font-main); margin: 0; padding: 20px; overflow-x: hidden; }
         header { text-align: center; border-bottom: 2px solid #333; margin-bottom: 20px; padding: 10px; }
         h1 { color: var(--neon-cyan); text-transform: uppercase; letter-spacing: 5px; margin: 0; text-shadow: 0 0 10px var(--neon-cyan); }
 
@@ -31,31 +31,31 @@
         .view-section.active { display: block; animation: fadeIn 0.5s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* TORRE */
+        /* --- ESTILO TORRE --- */
         .dashboard { display: flex; gap: 15px; height: 50vh; overflow-x: auto; padding-bottom: 10px; }
-        .stage-column { flex: 1; background: rgba(255, 255, 255, 0.02); border-radius: 8px; border: 1px solid #222; padding: 10px; min-width: 200px; display: flex; flex-direction: column; }
+        .stage-column { flex: 1; background: rgba(255, 255, 255, 0.02); border-radius: 8px; border: 1px solid #222; padding: 10px; min-width: 220px; display: flex; flex-direction: column; }
         .stage-header { font-size: 0.7rem; text-align: center; border-bottom: 1px solid #333; margin-bottom: 15px; color: #888; text-transform: uppercase; font-weight: bold; }
         
         .car-card { background: var(--card-bg); border-radius: 6px; padding: 12px; margin-bottom: 15px; border-left: 4px solid #555; cursor: pointer; transition: 0.3s; position: relative; }
         .car-card:hover { transform: scale(1.02); box-shadow: 0 0 10px var(--neon-cyan); }
         
-        .status-alert { border-left-color: var(--neon-red) !important; }
-        .status-quality { border-left-color: var(--neon-green) !important; }
-        .status-ready { border-left-color: var(--neon-orange) !important; }
+        .status-alert { border-left-color: var(--neon-red) !important; animation: pulse-red 2s infinite; }
+        .status-quality { border-left-color: var(--neon-green) !important; animation: pulse-green 2s infinite; }
+        .status-ready { border-left-color: var(--neon-orange) !important; box-shadow: 0 0 15px rgba(255, 153, 0, 0.3); }
 
-        /* TIMER BADGE */
-        .timer-badge { font-size: 0.65rem; background: #222; color: var(--neon-cyan); padding: 2px 6px; border-radius: 4px; position: absolute; top: 10px; right: 10px; border: 1px solid #333; }
+        /* CRONÔMETRO */
+        .timer-badge { font-size: 0.65rem; background: #222; color: var(--neon-cyan); padding: 2px 6px; border-radius: 4px; position: absolute; top: 10px; right: 10px; border: 1px solid #333; font-weight: bold; }
 
         .footer-agenda { margin-top: 20px; border: 1px dashed #444; background: #111; display: flex; gap: 15px; padding: 15px; min-height: 120px; overflow-x: auto; }
 
-        /* FORMS */
+        /* --- ESTILO FORMULÁRIOS --- */
         .form-container { max-width: 600px; margin: 0 auto; background: #111; padding: 20px; border: 1px solid #333; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; color: var(--neon-cyan); font-size: 0.9rem; }
         .form-group input { width: 100%; padding: 10px; background: #000; border: 1px solid #444; color: white; box-sizing: border-box; }
         
         .photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0; }
-        .photo-slot { background: #222; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 0.55rem; color: #666; border: 1px dashed #444; cursor: pointer; text-align: center; }
+        .photo-slot { background: #222; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 0.55rem; color: #666; border: 1px dashed #444; cursor: pointer; text-align: center; padding: 2px; }
         .photo-slot.uploaded { background: var(--neon-green); color: black; font-weight: bold; border: none; }
 
         .btn-save { width: 100%; padding: 15px; background: var(--neon-cyan); color: black; font-weight: bold; border: none; cursor: pointer; font-size: 1rem; text-transform: uppercase; }
@@ -65,21 +65,24 @@
 
         .history-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.8rem; }
         .history-table td, .history-table th { padding: 10px; border-bottom: 1px solid #222; text-align: left; }
+
+        @keyframes pulse-red { 0%, 100% { box-shadow: 0 0 5px var(--neon-red); } 50% { box-shadow: 0 0 15px var(--neon-red); } }
+        @keyframes pulse-green { 0%, 100% { box-shadow: 0 0 5px var(--neon-green); } 50% { box-shadow: 0 0 15px var(--neon-green); } }
     </style>
 </head>
 <body>
 
-    <header><h1>L.A. CUSTOM — PRODUTIVIDADE</h1></header>
+    <header><h1>L.A. CUSTOM — TORRE MASTER</h1></header>
 
     <div class="nav-bar">
-        <button class="nav-btn active" id="nav-torre" onclick="switchTab('sec-torre', this)">1. TORRE</button>
-        <button class="nav-btn" id="nav-checklist" onclick="switchTab('sec-checklist', this)">2. CHECK-IN</button>
-        <button class="nav-btn" onclick="switchTab('sec-tecnico', this)">3. TÉCNICO</button>
+        <button class="nav-btn active" id="nav-torre" onclick="switchTab('sec-torre', this)">1. GESTOR (TORRE)</button>
+        <button class="nav-btn" id="nav-checklist" onclick="switchTab('sec-checklist', this)">2. CONSULTOR (CHECK-IN)</button>
+        <button class="nav-btn" onclick="switchTab('sec-tecnico', this)">3. TÉCNICO (BOX)</button>
         <button class="nav-btn" onclick="switchTab('sec-historico', this)">5. HISTÓRICO</button>
     </div>
 
     <section id="sec-torre" class="view-section active">
-        <div style="color: var(--neon-cyan); font-weight: bold; margin-bottom: 10px; font-size: 0.8rem;">PÁTIO (CRONÔMETRO ATIVO):</div>
+        <div style="color: var(--neon-cyan); font-weight: bold; margin-bottom: 10px; font-size: 0.8rem;">PÁTIO / TRIAGEM:</div>
         <div class="footer-agenda" id="rodape" ondragover="allowDrop(event)" ondrop="handleDrop(event, 'Rodapé')"></div>
 
         <div class="dashboard" style="margin-top: 20px;">
@@ -94,32 +97,34 @@
 
     <section id="sec-checklist" class="view-section">
         <div class="form-container">
-            <h2 style="color: var(--neon-cyan); text-align: center; margin-top: 0;">CHECK-IN</h2>
-            <div class="form-group"><label>Cliente</label><input type="text" id="chk-nome"></div>
-            <div class="form-group"><label>Placa</label><input type="text" id="chk-placa"></div>
-            <div class="form-group"><label>Modelo</label><input type="text" id="chk-modelo"></div>
+            <h2 style="color: var(--neon-cyan); text-align: center; margin-top: 0;">ABRIR ORDEM DE SERVIÇO</h2>
+            <div class="form-group"><label>Nome do Cliente</label><input type="text" id="chk-nome"></div>
+            <div class="form-group"><label>WhatsApp (DDD + Número)</label><input type="tel" id="chk-whatsapp"></div>
+            <div class="form-group"><label>Placa do Veículo</label><input type="text" id="chk-placa"></div>
+            <div class="form-group"><label>Modelo e Cor</label><input type="text" id="chk-modelo"></div>
             
+            <label style="font-size: 0.8rem; color: var(--neon-cyan);">📸 Fotos Obrigatórias Entrada (Marque as 12)</label>
             <div class="photo-grid" id="gridIn">
-                <div class="photo-slot" onclick="controlarFoto(this, 'in')">Frente</div><div class="photo-slot" onclick="controlarFoto(this, 'in')">Traseira</div>
-                <div class="photo-slot" onclick="controlarFoto(this, 'in')">Lat. Dir</div><div class="photo-slot" onclick="controlarFoto(this, 'in')">Lat. Esq</div>
-                <div class="photo-slot" onclick="controlarFoto(this, 'in')">Roda DD</div><div class="photo-slot" onclick="controlarFoto(this, 'in')">Roda TD</div>
-                <div class="photo-slot" onclick="controlarFoto(this, 'in')">Roda DE</div><div class="photo-slot" onclick="controlarFoto(this, 'in')">Roda TE</div>
-                <div class="photo-slot" onclick="controlarFoto(this, 'in')">Painel</div><div class="photo-slot" onclick="controlarFoto(this, 'in')">Interior</div>
-                <div class="photo-slot" onclick="controlarFoto(this, 'in')">Teto</div><div class="photo-slot" onclick="controlarFoto(this, 'in')">Avarias</div>
+                <div class="photo-slot" onclick="controlarFoto(this)">Frente</div><div class="photo-slot" onclick="controlarFoto(this)">Traseira</div>
+                <div class="photo-slot" onclick="controlarFoto(this)">Lat. Dir</div><div class="photo-slot" onclick="controlarFoto(this)">Lat. Esq</div>
+                <div class="photo-slot" onclick="controlarFoto(this)">Roda DD</div><div class="photo-slot" onclick="controlarFoto(this)">Roda TD</div>
+                <div class="photo-slot" onclick="controlarFoto(this)">Roda DE</div><div class="photo-slot" onclick="controlarFoto(this)">Roda TE</div>
+                <div class="photo-slot" onclick="controlarFoto(this)">Painel/KM</div><div class="photo-slot" onclick="controlarFoto(this)">Interior</div>
+                <div class="photo-slot" onclick="controlarFoto(this)">Teto</div><div class="photo-slot" onclick="controlarFoto(this)">Avarias</div>
             </div>
-            <button class="btn-save" style="background: var(--neon-green);" onclick="submitChecklist()">ABRIR OS</button>
+            <button class="btn-save" style="background: var(--neon-green);" onclick="submitChecklist()">ENVIAR PARA TORRE</button>
         </div>
     </section>
 
     <section id="sec-tecnico" class="view-section">
         <div style="max-width: 500px; margin: 0 auto;">
-            <h2 style="color: var(--neon-cyan); text-align: center;">BOX</h2>
+            <h2 style="color: var(--neon-cyan); text-align: center;">MINHA FILA DE TRABALHO</h2>
             <div id="fila-tecnico"></div>
         </div>
     </section>
 
     <section id="sec-historico" class="view-section">
-        <h2 style="color: var(--neon-cyan); text-align: center;">HISTÓRICO</h2>
+        <h2 style="color: var(--neon-cyan); text-align: center;">HISTÓRICO DE SERVIÇOS</h2>
         <div style="overflow-x: auto;">
             <table class="history-table">
                 <thead><tr style="color: var(--neon-cyan);"><th>OS</th><th>Cliente</th><th>Modelo</th><th>Data</th></tr></thead>
@@ -131,8 +136,14 @@
     <div class="modal-overlay" id="modalTriagem">
         <div class="modal-content">
             <h2 id="tri-os" style="color: var(--neon-cyan); margin-top: 0;">TRIAGEM</h2>
-            <button class="btn-save" onclick="salvarTriagem()">LIBERAR BOX</button>
-            <button onclick="fecharModais()" style="background:none; border:none; color:gray; width:100%; margin-top:15px; cursor:pointer;">Fechar</button>
+            <p style="font-size: 0.8rem; color: #888;">Selecione os processos:</p>
+            <div style="margin-bottom: 20px;">
+                <label style="display:block; margin-bottom:10px;"><input type="checkbox" class="tri-check" value="Descontaminação" checked> Descontaminação</label>
+                <label style="display:block; margin-bottom:10px;"><input type="checkbox" class="tri-check" value="PPF / Ceramic" checked> Serviço Principal</label>
+                <label style="display:block; margin-bottom:10px;"><input type="checkbox" class="tri-check" value="Qualidade" checked> Qualidade</label>
+            </div>
+            <button class="btn-save" onclick="salvarTriagem()">LIBERAR PARA BOX</button>
+            <button onclick="fecharModais()" style="background:none; border:none; color:gray; width:100%; margin-top:15px; cursor:pointer;">Cancelar</button>
         </div>
     </div>
 
@@ -151,72 +162,73 @@
         const db = firebase.database();
 
         let bancoVeiculos = {};
-        let fIn = 0;
+        let fotosInContador = 0;
         let currentPath = null;
 
-        // --- RELÓGIO DE PRODUTIVIDADE ---
-        setInterval(() => { renderizarTorre(); }, 60000); // Atualiza cronômetros a cada 1 minuto
+        // Cronômetro: Atualiza visualmente a cada 60 segundos
+        setInterval(() => { renderizarTorre(); renderizarFilaTecnico(); }, 60000);
 
         function calcularTempo(timestamp) {
             if(!timestamp) return "0m";
             const diff = Date.now() - timestamp;
             const mins = Math.floor(diff / 60000);
-            const hrs = Math.floor(mins / 60) ;
+            const hrs = Math.floor(mins / 60);
             return hrs > 0 ? `${hrs}h ${mins % 60}m` : `${mins}m`;
         }
 
-        // SYNC
-        db.ref('veiculos_ativos').on('value', (s) => {
-            bancoVeiculos = s.val() || {};
+        // SYNC REALTIME
+        db.ref('veiculos_ativos').on('value', (snapshot) => {
+            bancoVeiculos = snapshot.val() || {};
             renderizarTorre();
             renderizarFilaTecnico();
         });
 
-        db.ref('historico').on('value', (s) => {
-            const tb = document.getElementById('tbody-historico');
-            tb.innerHTML = "";
-            const data = s.val();
+        db.ref('historico').on('value', (snapshot) => {
+            const tbody = document.getElementById('tbody-historico');
+            tbody.innerHTML = "";
+            const data = snapshot.val();
             if(data) {
                 Object.values(data).reverse().forEach(v => {
-                    tb.innerHTML += `<tr><td>${v.os}</td><td>${v.nome}</td><td>${v.modelo}</td><td>${v.entrega}</td></tr>`;
+                    tbody.innerHTML += `<tr><td>${v.os}</td><td>${v.nome}</td><td>${v.modelo}</td><td>${v.entrega}</td></tr>`;
                 });
             }
         });
 
-        // ACTIONS
+        // FUNÇÕES DE AÇÃO
         function submitChecklist() {
-            if(fIn < 12) { alert("Marque as 12 fotos!"); return; }
+            if(fotosInContador < 12) { alert("⚠️ Bloqueio: Marque as 12 fotos de entrada!"); return; }
             const nome = document.getElementById('chk-nome').value;
-            if(!nome) { alert("Informe o cliente!"); return; }
+            if(!nome) { alert("Nome do cliente é obrigatório!"); return; }
 
             const id = "OS_" + Date.now();
             const osDisplay = "OS #" + (1040 + Object.keys(bancoVeiculos).length);
 
             const dados = {
                 os: osDisplay, osPath: id, nome: nome,
+                whatsapp: document.getElementById('chk-whatsapp').value || "",
                 placa: document.getElementById('chk-placa').value || "S/P",
                 modelo: document.getElementById('chk-modelo').value || "Veículo",
                 statusTracker: 1, box: "Rodapé",
-                checkinTime: Date.now(), // Tempo total de permanência
-                boxTime: Date.now()     // Tempo no box atual
+                checkinTime: Date.now(), boxTime: Date.now(),
+                etapas: []
             };
 
             db.ref('veiculos_ativos/' + id).set(dados).then(() => {
-                alert("✅ OS Aberta!"); limparIn();
+                alert("✅ VEÍCULO ENVIADO!"); limparForm();
                 switchTab('sec-torre', document.getElementById('nav-torre'));
             });
         }
 
-        function handleDrop(ev, box) {
+        function handleDrop(ev, boxName) {
             ev.preventDefault();
-            const path = ev.dataTransfer.getData("text");
-            if(box !== 'Rodapé' && bancoVeiculos[path].statusTracker === 1) return alert("Triagem pendente!");
+            const osPath = ev.dataTransfer.getData("text");
+            const v = bancoVeiculos[osPath];
+            if(boxName !== 'Rodapé' && v.statusTracker === 1) { alert("Faça a triagem clicando no card primeiro!"); return; }
             
-            // Ao dropar, resetamos o cronômetro do Box (Produtividade)
-            db.ref('veiculos_ativos/' + path).update({ 
-                box: box, 
-                statusTracker: (box === 'Rodapé' ? 2 : 3),
-                boxTime: Date.now() 
+            db.ref('veiculos_ativos/' + osPath).update({ 
+                box: boxName, 
+                boxTime: Date.now(), // Reseta cronômetro do box
+                statusTracker: (boxName === 'Rodapé' ? 2 : 3) 
             });
         }
 
@@ -234,15 +246,14 @@
                 card.ondragstart = (e) => e.dataTransfer.setData("text", v.osPath);
                 card.onclick = () => v.statusTracker === 1 ? abrirTriagem(v.osPath) : null;
                 
-                // Exibe o tempo total e o tempo de box
-                const tempoTotal = calcularTempo(v.checkinTime);
-                const tempoBox = calcularTempo(v.boxTime);
+                const tBox = calcularTempo(v.boxTime);
+                const tTotal = calcularTempo(v.checkinTime);
 
                 card.innerHTML = `
-                    <div class="timer-badge" title="Tempo no Local">📍 ${tempoBox}</div>
+                    <div class="timer-badge">⏱️ ${tBox}</div>
                     <span class="os-number">${v.os} | ${v.placa}</span>
                     <div class="car-model">${v.modelo}</div>
-                    <div style="font-size: 0.6rem; color: #666; margin-top: 5px;">Total Pátio: ${tempoTotal}</div>
+                    <div style="font-size: 0.6rem; color: #666; margin-top: 5px;">Total: ${tTotal}</div>
                 `;
 
                 if(v.box === "Rodapé") rodape.appendChild(card);
@@ -253,47 +264,70 @@
             });
         }
 
-        // Outros Helpers
-        function switchTab(id, btn) {
-            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            btn.classList.add('active');
-        }
         function renderizarFilaTecnico() {
             const f = document.getElementById('fila-tecnico');
             f.innerHTML = "";
             Object.values(bancoVeiculos).filter(v => v.statusTracker >= 2).forEach(v => {
-                f.innerHTML += `<div class="car-card" style="border-left-color:var(--neon-cyan)">
-                    <span class="os-number">${v.os} (${v.box})</span><div class="car-model">${v.modelo}</div>
-                    <button onclick="concluirServico('${v.osPath}')" style="width:100%; margin-top:10px; background:var(--neon-cyan); border:none; padding:8px; cursor:pointer; font-weight:bold;">CONCLUIR</button>
-                </div>`;
+                const tBox = calcularTempo(v.boxTime);
+                let htmlEtapas = "";
+                if(v.etapas) {
+                    v.etapas.forEach(et => {
+                        htmlEtapas += `<div style="font-size:0.65rem; color:#aaa; margin-top:3px;">○ ${et}</div>`;
+                    });
+                }
+
+                f.innerHTML += `
+                    <div class="car-card" style="border-left-color:var(--neon-cyan)">
+                        <div class="timer-badge">⏱️ ${tBox}</div>
+                        <span class="os-number">${v.os} | ${v.placa}</span>
+                        <div class="car-model">${v.modelo}</div>
+                        <div style="font-size:0.75rem; color:#888; margin-bottom:10px;">Cliente: ${v.nome}</div>
+                        <div style="background:rgba(0,0,0,0.4); padding:8px; border-radius:4px; margin-bottom:10px;">
+                            <div style="font-size:0.6rem; color:var(--neon-cyan); font-weight:bold;">ROTEIRO:</div>
+                            ${htmlEtapas || 'Aguardando definição'}
+                        </div>
+                        <button onclick="concluirServico('${v.osPath}')" style="width:100%; background:var(--neon-cyan); border:none; padding:10px; cursor:pointer; font-weight:bold; font-size:0.7rem;">CONCLUIR SERVIÇO</button>
+                    </div>`;
             });
         }
+
+        function abrirTriagem(path) {
+            currentPath = path;
+            document.getElementById('tri-os').innerText = bancoVeiculos[path].os;
+            document.getElementById('modalTriagem').style.display = 'flex';
+        }
+
+        function salvarTriagem() {
+            const checks = document.querySelectorAll('.tri-check:checked');
+            let etapas = [];
+            checks.forEach(c => etapas.push(c.value));
+            db.ref('veiculos_ativos/' + currentPath).update({ etapas: etapas, statusTracker: 2 });
+            fecharModais();
+        }
+
         function concluirServico(path) {
             const v = bancoVeiculos[path];
             db.ref('historico/' + path).set({...v, entrega: new Date().toLocaleString()}).then(() => db.ref('veiculos_ativos/' + path).remove());
         }
-        function abrirTriagem(path) {
-            currentPath = path;
-            document.getElementById('modal-os-title').innerText = bancoVeiculos[path].os;
-            document.getElementById('modalTriagem').style.display = 'flex';
-        }
-        function finalizarTriagem() {
-            db.ref('veiculos_ativos/' + currentPath).update({ statusTracker: 2 });
-            fecharModais();
-        }
-        function controlarFoto(el) {
+
+        // HELPERS UI
+        window.switchTab = (id, btn) => {
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            btn.classList.add('active');
+        };
+        window.controlarFoto = (el) => {
             el.classList.toggle('uploaded');
-            fIn += el.classList.contains('uploaded') ? 1 : -1;
+            fotosInContador += el.classList.contains('uploaded') ? 1 : -1;
             el.innerText = el.classList.contains('uploaded') ? "✓ OK" : el.innerText.replace("✓ OK", "");
-        }
-        function allowDrop(e) { e.preventDefault(); }
-        function fecharModais() { document.getElementById('modalTriagem').style.display='none'; }
-        function limparIn() { 
-            ['chk-nome', 'chk-placa', 'chk-modelo'].forEach(i => document.getElementById(i).value = "");
+        };
+        window.allowDrop = (e) => e.preventDefault();
+        window.fecharModais = () => document.getElementById('modalTriagem').style.display='none';
+        function limparForm() {
+            ['chk-nome', 'chk-placa', 'chk-modelo', 'chk-whatsapp'].forEach(i => document.getElementById(i).value = "");
             document.querySelectorAll('.photo-slot').forEach(s => { s.classList.remove('uploaded'); s.innerText = s.innerText.replace("✓ OK", ""); });
-            fIn = 0;
+            fotosInContador = 0;
         }
     </script>
 </body>
