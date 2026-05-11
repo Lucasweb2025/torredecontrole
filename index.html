@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>L.A. Custom - Torre Cloud V22</title>
+    <title>L.A. Custom - Torre Cloud V25</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
     <style>
         :root {
             --bg-color: #0d0d0d;
@@ -14,75 +18,59 @@
             --font-main: 'Courier New', Courier, monospace;
         }
 
-        body {
-            background-color: var(--bg-color);
-            color: white;
-            font-family: var(--font-main);
-            margin: 0;
-            padding: 20px;
-            overflow-x: hidden;
-        }
+        body { background-color: var(--bg-color); color: white; font-family: var(--font-main); margin: 0; padding: 20px; }
+        header { text-align: center; border-bottom: 2px solid #333; margin-bottom: 20px; padding: 10px; }
+        h1 { color: var(--neon-cyan); text-transform: uppercase; letter-spacing: 5px; margin: 0; }
 
-        header { text-align: center; padding: 10px 0; border-bottom: 2px solid #333; margin-bottom: 20px; }
-        h1 { text-transform: uppercase; letter-spacing: 5px; color: var(--neon-cyan); text-shadow: 0 0 10px var(--neon-cyan); margin: 0; }
-
-        .nav-bar { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
-        .nav-btn { background: #111; color: white; border: 1px solid var(--neon-cyan); padding: 10px 20px; cursor: pointer; text-transform: uppercase; font-weight: bold; transition: 0.3s; }
-        .nav-btn:hover, .nav-btn.active { background: var(--neon-cyan); color: black; box-shadow: 0 0 10px var(--neon-cyan); }
+        .nav-bar { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
+        .nav-btn { background: #111; color: white; border: 1px solid var(--neon-cyan); padding: 10px 20px; cursor: pointer; text-transform: uppercase; font-weight: bold; }
+        .nav-btn.active { background: var(--neon-cyan); color: black; }
 
         .view-section { display: none; }
-        .view-section.active { display: block; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .view-section.active { display: block; }
 
-        /* TORRE */
-        .dashboard { display: flex; gap: 15px; height: 45vh; overflow-x: auto; padding-bottom: 10px; }
-        .stage-column { flex: 1; background: rgba(255, 255, 255, 0.02); border-radius: 8px; border: 1px solid #222; display: flex; flex-direction: column; padding: 10px; min-width: 180px; }
-        .stage-header { font-size: 0.8rem; font-weight: bold; text-align: center; padding-bottom: 10px; border-bottom: 1px solid #333; margin-bottom: 15px; color: #888; text-transform: uppercase; }
+        .dashboard { display: flex; gap: 15px; height: 45vh; overflow-x: auto; }
+        .stage-column { flex: 1; background: rgba(255, 255, 255, 0.02); border-radius: 8px; border: 1px solid #222; padding: 10px; min-width: 180px; }
+        .stage-header { font-size: 0.8rem; text-align: center; border-bottom: 1px solid #333; margin-bottom: 15px; color: #888; }
         
-        .car-card { background: var(--card-bg); border-radius: 6px; padding: 12px; margin-bottom: 15px; border-left: 4px solid #555; box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer; transition: 0.3s; }
-        .car-card:hover { transform: scale(1.02); box-shadow: 0 0 15px var(--neon-cyan); }
-        .os-number { font-size: 0.7rem; color: var(--neon-cyan); font-weight: bold; }
-        .car-model { font-size: 1rem; margin: 5px 0; font-weight: bold; }
-        .click-hint { font-size: 0.65rem; color: var(--neon-cyan); margin-top: 8px; display: inline-block; background: #222; padding: 2px 6px; border-radius: 3px; }
-
+        .car-card { background: var(--card-bg); border-radius: 6px; padding: 12px; margin-bottom: 15px; border-left: 4px solid #555; cursor: pointer; transition: 0.3s; }
+        .car-card:hover { transform: scale(1.02); box-shadow: 0 0 10px var(--neon-cyan); }
         .status-alert { border-left-color: var(--neon-red) !important; animation: pulse-red 2s infinite; }
         @keyframes pulse-red { 0%, 100% { box-shadow: 0 0 5px var(--neon-red); } 50% { box-shadow: 0 0 15px var(--neon-red); } }
 
-        .footer-agenda { margin-top: 20px; border: 1px dashed #444; background: #111; display: flex; gap: 15px; padding: 15px; overflow-x: auto; min-height: 120px; }
-        .log-panel { margin-top: 20px; background: #000; border: 1px solid #333; padding: 15px; height: 120px; overflow-y: auto; font-size: 0.8rem; color: #aaa; }
+        .footer-agenda { margin-top: 20px; border: 1px dashed #444; background: #111; display: flex; gap: 15px; padding: 15px; min-height: 120px; overflow-x: auto; }
 
         .form-container { max-width: 600px; margin: 0 auto; background: #111; padding: 20px; border: 1px solid #333; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; color: var(--neon-cyan); }
         .form-group input { width: 100%; padding: 10px; background: #000; border: 1px solid #444; color: white; box-sizing: border-box; }
         
-        .photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
-        .photo-slot { background: #222; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; color: #666; border: 1px dashed #444; cursor: pointer; text-align: center; }
-        .photo-slot.uploaded { background: var(--neon-green); color: black; border: none; font-weight: bold;}
+        .photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 15px 0; }
+        .photo-slot { background: #222; height: 60px; display: flex; align-items: center; justify-content: center; font-size: 0.6rem; color: #666; border: 1px dashed #444; cursor: pointer; text-align: center; }
+        .photo-slot.uploaded { background: var(--neon-green); color: black; font-weight: bold; border: none; }
 
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: #111; border: 2px solid var(--neon-cyan); padding: 25px; width: 90%; max-width: 450px; }
-        .btn-save { width: 100%; padding: 12px; background: var(--neon-cyan); color: black; font-weight: bold; border: none; cursor: pointer; margin-top: 10px; }
+        .btn-save { width: 100%; padding: 15px; background: var(--neon-cyan); color: black; font-weight: bold; border: none; cursor: pointer; font-size: 1rem; }
         
-        .history-table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #111; }
-        .history-table th { background: #222; color: var(--neon-cyan); padding: 12px; text-align: left; font-size: 0.8rem; border-bottom: 2px solid var(--neon-cyan); }
-        .history-table td { padding: 12px; border-bottom: 1px solid #333; font-size: 0.9rem; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-content { background: #111; border: 2px solid var(--neon-cyan); padding: 25px; width: 90%; max-width: 400px; }
+
+        .history-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .history-table td, .history-table th { padding: 10px; border-bottom: 1px solid #222; text-align: left; }
     </style>
 </head>
 <body>
 
-    <header><h1>PROJETO AGENDA - L.A. CUSTOM</h1></header>
+    <header><h1>L.A. CUSTOM — TORRE CLOUD</h1></header>
 
     <div class="nav-bar">
-        <button class="nav-btn active" id="btn-torre" onclick="switchTab('sec-torre', this)">1. Gestor (Torre)</button>
-        <button class="nav-btn" onclick="switchTab('sec-checklist', this)">2. Consultor (Check-in)</button>
-        <button class="nav-btn" onclick="switchTab('sec-tecnico', this)">3. Técnico (Box)</button>
-        <button class="nav-btn" onclick="switchTab('sec-cliente', this)">4. Cliente (Rastreio)</button>
+        <button class="nav-btn active" id="nav-torre" onclick="switchTab('sec-torre', this)">1. Gestor</button>
+        <button class="nav-btn" id="nav-checklist" onclick="switchTab('sec-checklist', this)">2. Check-in</button>
+        <button class="nav-btn" onclick="switchTab('sec-tecnico', this)">3. Técnico</button>
         <button class="nav-btn" onclick="switchTab('sec-historico', this)">5. Histórico</button>
     </div>
 
     <section id="sec-torre" class="view-section active">
-        <div style="color: var(--neon-cyan); margin-bottom: 10px; font-weight: bold;">PÁTIO / TRIAGEM:</div>
+        <div style="color: var(--neon-cyan); font-weight: bold; margin-bottom: 10px;">PÁTIO / TRIAGEM:</div>
         <div class="footer-agenda" id="rodape" ondragover="allowDrop(event)" ondrop="handleDrop(event, 'Rodapé')"></div>
 
         <div class="dashboard" style="margin-top: 20px;">
@@ -93,131 +81,142 @@
             <div class="stage-column" ondragover="allowDrop(event)" ondrop="handleDrop(event, 'Box 5')"><div class="stage-header">Box 5</div></div>
             <div class="stage-column" ondragover="allowDrop(event)" ondrop="handleDrop(event, 'Box 6')"><div class="stage-header">Box 6</div></div>
         </div>
-        <div class="log-panel" id="logPanel"></div>
     </section>
 
     <section id="sec-checklist" class="view-section">
         <div class="form-container">
-            <h2 style="color: var(--neon-cyan); text-align: center;">ABRIR OS</h2>
+            <h2 style="color: var(--neon-cyan); text-align: center;">ABRIR ORDEM DE SERVIÇO</h2>
             <div class="form-group"><label>Cliente</label><input type="text" id="chk-nome"></div>
-            <div class="form-group"><label>WhatsApp</label><input type="tel" id="chk-whatsapp"></div>
             <div class="form-group"><label>Placa</label><input type="text" id="chk-placa"></div>
             <div class="form-group"><label>Modelo</label><input type="text" id="chk-modelo"></div>
+            
+            <label>📸 Fotos Obrigatórias (Marque as 12)</label>
             <div class="photo-grid">
-                <div class="photo-slot" onclick="simularFoto(this)">Frente</div><div class="photo-slot" onclick="simularFoto(this)">Traseira</div>
-                <div class="photo-slot" onclick="simularFoto(this)">Lat. Dir</div><div class="photo-slot" onclick="simularFoto(this)">Lat. Esq</div>
-                <div class="photo-slot" onclick="simularFoto(this)">Roda DD</div><div class="photo-slot" onclick="simularFoto(this)">Roda TD</div>
-                <div class="photo-slot" onclick="simularFoto(this)">Roda DE</div><div class="photo-slot" onclick="simularFoto(this)">Roda TE</div>
-                <div class="photo-slot" onclick="simularFoto(this)">Painel</div><div class="photo-slot" onclick="simularFoto(this)">Interior</div>
-                <div class="photo-slot" onclick="simularFoto(this)">Teto</div><div class="photo-slot" onclick="simularFoto(this)">Avarias</div>
+                <div class="photo-slot" onclick="controlarFoto(this)">Frente</div><div class="photo-slot" onclick="controlarFoto(this)">Traseira</div>
+                <div class="photo-slot" onclick="controlarFoto(this)">Lat. Dir</div><div class="photo-slot" onclick="controlarFoto(this)">Lat. Esq</div>
+                <div class="photo-slot" onclick="controlarFoto(this)">Roda DD</div><div class="photo-slot" onclick="controlarFoto(this)">Roda TD</div>
+                <div class="photo-slot" onclick="controlarFoto(this)">Roda DE</div><div class="photo-slot" onclick="controlarFoto(this)">Roda TE</div>
+                <div class="photo-slot" onclick="controlarFoto(this)">Painel</div><div class="photo-slot" onclick="controlarFoto(this)">Interior</div>
+                <div class="photo-slot" onclick="controlarFoto(this)">Teto</div><div class="photo-slot" onclick="controlarFoto(this)">Avarias</div>
             </div>
-            <button class="btn-save" style="background: var(--neon-green);" onclick="submitChecklist()">ABRIR ORDEM DE SERVIÇO</button>
+            <button class="btn-save" style="background: var(--neon-green);" onclick="submitChecklist()">ENVIAR PARA TORRE</button>
         </div>
     </section>
 
     <section id="sec-tecnico" class="view-section">
-        <div style="max-width: 500px; margin: 0 auto;">
-            <h2 style="color: var(--neon-cyan); text-align: center;">FILA TÉCNICA</h2>
-            <div id="fila-tecnico"></div>
-        </div>
+        <div style="max-width: 500px; margin: 0 auto;" id="fila-tecnico"></div>
     </section>
 
     <section id="sec-historico" class="view-section">
         <h2 style="color: var(--neon-cyan); text-align: center;">HISTÓRICO</h2>
         <table class="history-table">
-            <thead><tr><th>OS</th><th>Cliente</th><th>Modelo</th><th>Data</th></tr></thead>
+            <thead><tr style="color: var(--neon-cyan);"><th>OS</th><th>Modelo</th><th>Data</th></tr></thead>
             <tbody id="tbody-historico"></tbody>
         </table>
     </section>
 
     <div class="modal-overlay" id="triagemModal">
         <div class="modal-content">
-            <h2 id="modal-triagem-os" style="color: var(--neon-cyan);">TRIAGEM</h2>
-            <button class="btn-save" onclick="finalizarTriagem()">LIBERAR PARA BOX</button>
-            <button onclick="fecharModais()" style="background:none; border:none; color:grey; width:100%; margin-top:10px; cursor:pointer;">Cancelar</button>
+            <h2 id="modal-os-title" style="color: var(--neon-cyan);">TRIAGEM</h2>
+            <button class="btn-save" onclick="finalizarTriagem()">LIBERAR BOX</button>
+            <button onclick="fecharModais()" style="margin-top:10px; background:none; border:none; color:gray; width:100%; cursor:pointer;">Cancelar</button>
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, set, update, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
+    <script>
         const firebaseConfig = {
             apiKey: "AIzaSyAsQ754pXkHoNsxgraJtViT3daCKY1PoHk",
             authDomain: "torre-de-controle-a83a0.firebaseapp.com",
-            databaseURL: "https://torre-de-controle-a83a0-default-rtdb.firebaseio.com/",
+            databaseURL: "https://torre-de-controle-a83a0-default-rtdb.firebaseio.com",
             projectId: "torre-de-controle-a83a0",
             storageBucket: "torre-de-controle-a83a0.firebasestorage.app",
             messagingSenderId: "406965903360",
             appId: "1:406965903360:web:c9822015d8a1d2c354f8e5"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
-        window.bancoVeiculos = {};
-        window.currentOSPath = null;
+        let bancoVeiculos = {};
+        let fotosContador = 0;
+        let currentPath = null;
 
-        // Escuta Realtime
-        onValue(ref(db, 'veiculos_ativos'), (snapshot) => {
-            window.bancoVeiculos = snapshot.val() || {};
+        db.ref('veiculos_ativos').on('value', (snapshot) => {
+            bancoVeiculos = snapshot.val() || {};
             renderizarTorre();
             renderizarFilaTecnico();
         });
 
-        onValue(ref(db, 'historico'), (snapshot) => {
-            renderizarHistorico(snapshot.val());
+        db.ref('historico').on('value', (snapshot) => {
+            const tbody = document.getElementById('tbody-historico');
+            tbody.innerHTML = "";
+            const data = snapshot.val();
+            if(data) {
+                Object.values(data).reverse().forEach(v => {
+                    tbody.innerHTML += `<tr><td>${v.os}</td><td>${v.modelo}</td><td>${v.entrega}</td></tr>`;
+                });
+            }
         });
 
-        // Função Principal: Abrir OS
-        window.submitChecklist = () => {
-            const timestamp = Date.now();
-            const osDisplay = "OS #" + (1040 + Object.keys(window.bancoVeiculos).length);
-            const osPath = "OS_" + timestamp; // ID único e limpo
+        function submitChecklist() {
+            if(fotosContador < 12) {
+                alert("⚠️ Por favor, complete as 12 fotos."); return;
+            }
+            const nome = document.getElementById('chk-nome').value;
+            if(!nome) { alert("Nome do cliente é obrigatório."); return; }
+
+            const id = "OS_" + Date.now();
+            const osDisplay = "OS #" + (1040 + Object.keys(bancoVeiculos).length);
 
             const dados = {
                 os: osDisplay,
-                osPath: osPath,
-                nome: document.getElementById('chk-nome').value || "Não informado",
-                whatsapp: document.getElementById('chk-whatsapp').value || "",
+                osPath: id,
+                nome: nome,
                 placa: document.getElementById('chk-placa').value || "S/P",
                 modelo: document.getElementById('chk-modelo').value || "Veículo",
-                statusTracker: 1, // 1 = Aguardando Triagem
-                box: "Rodapé",
-                timestamp: timestamp
+                statusTracker: 1,
+                box: "Rodapé"
             };
 
-            set(ref(db, 'veiculos_ativos/' + osPath), dados)
+            db.ref('veiculos_ativos/' + id).set(dados)
                 .then(() => {
-                    alert("✅ OS Enviada com sucesso!");
+                    alert("✅ VEÍCULO ENVIADO PARA A TORRE!");
                     limparForm();
-                    switchTab('sec-torre', document.getElementById('btn-torre'));
+                    switchTab('sec-torre', document.getElementById('nav-torre'));
                 })
-                .catch(err => alert("❌ Erro ao salvar: " + err.message));
-        };
+                .catch(e => alert("Erro: " + e.message));
+        }
 
-        // Renderização
+        function switchTab(id, btn) {
+            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        function controlarFoto(el) {
+            el.classList.toggle('uploaded');
+            if(el.classList.contains('uploaded')) {
+                el.innerText = "✓ OK"; fotosContador++;
+            } else {
+                el.innerText = el.innerText.replace("✓ OK", ""); fotosContador--;
+            }
+        }
+
         function renderizarTorre() {
             const rodape = document.getElementById('rodape');
             const boxes = document.querySelectorAll('.stage-column');
-            if(!rodape) return;
-            
             rodape.innerHTML = "";
             boxes.forEach((b, i) => b.innerHTML = `<div class="stage-header">Box ${i+1}</div>`);
 
-            Object.values(window.bancoVeiculos).forEach(v => {
+            Object.values(bancoVeiculos).forEach(v => {
                 const card = document.createElement('div');
                 card.className = "car-card";
                 if(v.statusTracker === 1) card.classList.add('status-alert');
                 card.draggable = true;
                 card.ondragstart = (e) => e.dataTransfer.setData("text", v.osPath);
                 card.onclick = () => v.statusTracker === 1 ? abrirTriagem(v.osPath) : null;
-
-                card.innerHTML = `
-                    <span class="os-number">${v.os} | ${v.placa}</span>
-                    <div class="car-model">${v.modelo}</div>
-                    <span class="click-hint">${v.statusTracker === 1 ? '👆 TRIAGEM' : v.box}</span>
-                `;
+                card.innerHTML = `<span class="os-number">${v.os} | ${v.placa}</span><div class="car-model">${v.modelo}</div>`;
 
                 if(v.box === "Rodapé") rodape.appendChild(card);
                 else {
@@ -227,66 +226,48 @@
             });
         }
 
-        window.renderizarFilaTecnico = () => {
+        function renderizarFilaTecnico() {
             const f = document.getElementById('fila-tecnico');
             f.innerHTML = "";
-            Object.values(window.bancoVeiculos).filter(v => v.statusTracker >= 2).forEach(v => {
-                const d = document.createElement('div');
-                d.className = "car-card";
-                d.innerHTML = `<span class="os-number">${v.os} (${v.box})</span><div class="car-model">${v.modelo}</div><button onclick="concluirServico('${v.osPath}')" style="width:100%; background:var(--neon-cyan); border:none; padding:8px; cursor:pointer; font-weight:bold; margin-top:10px;">CONCLUIR</button>`;
-                f.appendChild(d);
-            });
-        };
-
-        window.concluirServico = (path) => {
-            const v = window.bancoVeiculos[path];
-            set(ref(db, 'historico/' + path), {...v, entrega: new Date().toLocaleString()})
-                .then(() => remove(ref(db, 'veiculos_ativos/' + path)));
-        };
-
-        function renderizarHistorico(data) {
-            const tb = document.getElementById('tbody-historico');
-            tb.innerHTML = "";
-            if(!data) return;
-            Object.values(data).reverse().forEach(v => {
-                tb.innerHTML += `<tr><td>${v.os}</td><td>${v.nome}</td><td>${v.modelo}</td><td>${v.entrega}</td></tr>`;
+            Object.values(bancoVeiculos).filter(v => v.statusTracker >= 2).forEach(v => {
+                f.innerHTML += `<div class="car-card" style="border-left-color:var(--neon-cyan)">
+                    <span class="os-number">${v.os} (${v.box})</span><div class="car-model">${v.modelo}</div>
+                    <button onclick="concluirServico('${v.osPath}')" style="width:100%; margin-top:10px; background:var(--neon-cyan); border:none; padding:8px; cursor:pointer; font-weight:bold;">CONCLUIR</button>
+                </div>`;
             });
         }
 
-        // Helpers
-        window.switchTab = (id, btn) => {
-            document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            btn.classList.add('active');
-        };
-        window.handleDrop = (ev, box) => {
+        function concluirServico(path) {
+            const v = bancoVeiculos[path];
+            db.ref('historico/' + path).set({...v, entrega: new Date().toLocaleString()})
+                .then(() => db.ref('veiculos_ativos/' + path).remove());
+        }
+
+        function handleDrop(ev, box) {
             ev.preventDefault();
             const path = ev.dataTransfer.getData("text");
-            if(box !== 'Rodapé' && window.bancoVeiculos[path].statusTracker < 2) return alert("Triagem pendente!");
-            update(ref(db, 'veiculos_ativos/' + path), { box: box });
-        };
-        window.abrirTriagem = (path) => {
-            window.currentOSPath = path;
-            document.getElementById('modal-triagem-os').innerText = window.bancoVeiculos[path].os;
-            document.getElementById('triagemModal').style.display = 'flex';
-        };
-        window.finalizarTriagem = () => {
-            update(ref(db, 'veiculos_ativos/' + window.currentOSPath), { statusTracker: 2 });
-            fecharModais();
-        };
-        window.allowDrop = (e) => e.preventDefault();
-        window.fecharModais = () => document.getElementById('triagemModal').style.display='none';
-        window.simularFoto = (el) => { el.classList.add('uploaded'); el.innerText = "✓ OK"; };
-        function limparForm() {
-            ['chk-nome', 'chk-whatsapp', 'chk-placa', 'chk-modelo'].forEach(id => document.getElementById(id).value = "");
-            document.querySelectorAll('.photo-slot').forEach(s => { s.classList.remove('uploaded'); s.innerText = s.innerText.replace("✓ OK", ""); });
+            if(box !== 'Rodapé' && bancoVeiculos[path].statusTracker < 2) return alert("Triagem pendente.");
+            db.ref('veiculos_ativos/' + path).update({ box: box });
         }
-        function addLog(m) {
-            const l = document.getElementById('logPanel');
-            const e = document.createElement('div');
-            e.innerHTML = `<span>[${new Date().toLocaleTimeString()}]</span> ${m}`;
-            l.prepend(e);
+
+        function abrirTriagem(path) {
+            currentPath = path;
+            document.getElementById('modal-os-title').innerText = bancoVeiculos[path].os;
+            document.getElementById('triagemModal').style.display = 'flex';
+        }
+
+        function finalizarTriagem() {
+            db.ref('veiculos_ativos/' + currentPath).update({ statusTracker: 2 });
+            fecharModais();
+        }
+
+        function allowDrop(e) { e.preventDefault(); }
+        function fecharModais() { document.getElementById('triagemModal').style.display='none'; }
+        
+        function limparForm() {
+            ['chk-nome', 'chk-placa', 'chk-modelo'].forEach(id => document.getElementById(id).value = "");
+            document.querySelectorAll('.photo-slot').forEach(s => { s.classList.remove('uploaded'); s.innerText = s.innerText.replace("✓ OK", ""); });
+            fotosContador = 0;
         }
     </script>
 </body>
