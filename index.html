@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>L.A. Custom - Projeto Agenda MASTER CLOUD</title>
+    <title>L.A. Custom - Torre Cloud V27 (Productivity)</title>
     
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
@@ -19,7 +19,7 @@
             --font-main: 'Courier New', Courier, monospace;
         }
 
-        body { background-color: var(--bg-color); color: white; font-family: var(--font-main); margin: 0; padding: 20px; overflow-x: hidden; }
+        body { background-color: var(--bg-color); color: white; font-family: var(--font-main); margin: 0; padding: 20px; }
         header { text-align: center; border-bottom: 2px solid #333; margin-bottom: 20px; padding: 10px; }
         h1 { color: var(--neon-cyan); text-transform: uppercase; letter-spacing: 5px; margin: 0; text-shadow: 0 0 10px var(--neon-cyan); }
 
@@ -31,19 +31,20 @@
         .view-section.active { display: block; animation: fadeIn 0.5s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        .dashboard { display: flex; gap: 15px; height: 45vh; overflow-x: auto; padding-bottom: 10px; }
+        /* TORRE */
+        .dashboard { display: flex; gap: 15px; height: 50vh; overflow-x: auto; padding-bottom: 10px; }
         .stage-column { flex: 1; background: rgba(255, 255, 255, 0.02); border-radius: 8px; border: 1px solid #222; padding: 10px; min-width: 200px; display: flex; flex-direction: column; }
         .stage-header { font-size: 0.7rem; text-align: center; border-bottom: 1px solid #333; margin-bottom: 15px; color: #888; text-transform: uppercase; font-weight: bold; }
         
         .car-card { background: var(--card-bg); border-radius: 6px; padding: 12px; margin-bottom: 15px; border-left: 4px solid #555; cursor: pointer; transition: 0.3s; position: relative; }
         .car-card:hover { transform: scale(1.02); box-shadow: 0 0 10px var(--neon-cyan); }
         
-        .status-alert { border-left-color: var(--neon-red) !important; animation: pulse-red 2s infinite; }
-        .status-quality { border-left-color: var(--neon-green) !important; animation: pulse-green 2s infinite; }
-        .status-ready { border-left-color: var(--neon-orange) !important; box-shadow: 0 0 15px rgba(255, 153, 0, 0.3); }
+        .status-alert { border-left-color: var(--neon-red) !important; }
+        .status-quality { border-left-color: var(--neon-green) !important; }
+        .status-ready { border-left-color: var(--neon-orange) !important; }
 
-        @keyframes pulse-red { 0%, 100% { box-shadow: 0 0 5px var(--neon-red); } 50% { box-shadow: 0 0 15px var(--neon-red); } }
-        @keyframes pulse-green { 0%, 100% { box-shadow: 0 0 5px var(--neon-green); } 50% { box-shadow: 0 0 15px var(--neon-green); } }
+        /* TIMER BADGE */
+        .timer-badge { font-size: 0.65rem; background: #222; color: var(--neon-cyan); padding: 2px 6px; border-radius: 4px; position: absolute; top: 10px; right: 10px; border: 1px solid #333; }
 
         .footer-agenda { margin-top: 20px; border: 1px dashed #444; background: #111; display: flex; gap: 15px; padding: 15px; min-height: 120px; overflow-x: auto; }
 
@@ -51,7 +52,7 @@
         .form-container { max-width: 600px; margin: 0 auto; background: #111; padding: 20px; border: 1px solid #333; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; color: var(--neon-cyan); font-size: 0.9rem; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; background: #000; border: 1px solid #444; color: white; box-sizing: border-box; }
+        .form-group input { width: 100%; padding: 10px; background: #000; border: 1px solid #444; color: white; box-sizing: border-box; }
         
         .photo-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 15px 0; }
         .photo-slot { background: #222; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 0.55rem; color: #666; border: 1px dashed #444; cursor: pointer; text-align: center; }
@@ -60,7 +61,7 @@
         .btn-save { width: 100%; padding: 15px; background: var(--neon-cyan); color: black; font-weight: bold; border: none; cursor: pointer; font-size: 1rem; text-transform: uppercase; }
         
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
-        .modal-content { background: #111; border: 2px solid var(--neon-cyan); padding: 20px; width: 100%; max-width: 450px; max-height: 90vh; overflow-y: auto; }
+        .modal-content { background: #111; border: 2px solid var(--neon-cyan); padding: 20px; width: 100%; max-width: 400px; }
 
         .history-table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.8rem; }
         .history-table td, .history-table th { padding: 10px; border-bottom: 1px solid #222; text-align: left; }
@@ -68,17 +69,17 @@
 </head>
 <body>
 
-    <header><h1>L.A. CUSTOM — MASTER CLOUD</h1></header>
+    <header><h1>L.A. CUSTOM — PRODUTIVIDADE</h1></header>
 
     <div class="nav-bar">
-        <button class="nav-btn active" id="nav-torre" onclick="switchTab('sec-torre', this)">1. GESTOR (TORRE)</button>
-        <button class="nav-btn" id="nav-checklist" onclick="switchTab('sec-checklist', this)">2. CONSULTOR (CHECK-IN)</button>
-        <button class="nav-btn" onclick="switchTab('sec-tecnico', this)">3. TÉCNICO (BOX)</button>
+        <button class="nav-btn active" id="nav-torre" onclick="switchTab('sec-torre', this)">1. TORRE</button>
+        <button class="nav-btn" id="nav-checklist" onclick="switchTab('sec-checklist', this)">2. CHECK-IN</button>
+        <button class="nav-btn" onclick="switchTab('sec-tecnico', this)">3. TÉCNICO</button>
         <button class="nav-btn" onclick="switchTab('sec-historico', this)">5. HISTÓRICO</button>
     </div>
 
     <section id="sec-torre" class="view-section active">
-        <div style="color: var(--neon-cyan); font-weight: bold; margin-bottom: 10px; font-size: 0.8rem;">PÁTIO / TRIAGEM (CLIQUE PARA INICIAR):</div>
+        <div style="color: var(--neon-cyan); font-weight: bold; margin-bottom: 10px; font-size: 0.8rem;">PÁTIO (CRONÔMETRO ATIVO):</div>
         <div class="footer-agenda" id="rodape" ondragover="allowDrop(event)" ondrop="handleDrop(event, 'Rodapé')"></div>
 
         <div class="dashboard" style="margin-top: 20px;">
@@ -93,13 +94,11 @@
 
     <section id="sec-checklist" class="view-section">
         <div class="form-container">
-            <h2 style="color: var(--neon-cyan); text-align: center; margin-top: 0;">CHECK-IN DE ENTRADA</h2>
-            <div class="form-group"><label>Nome do Cliente</label><input type="text" id="chk-nome"></div>
-            <div class="form-group"><label>📱 WhatsApp (Somente números)</label><input type="tel" id="chk-whatsapp" placeholder="11999999999"></div>
+            <h2 style="color: var(--neon-cyan); text-align: center; margin-top: 0;">CHECK-IN</h2>
+            <div class="form-group"><label>Cliente</label><input type="text" id="chk-nome"></div>
             <div class="form-group"><label>Placa</label><input type="text" id="chk-placa"></div>
-            <div class="form-group"><label>Modelo do Veículo</label><input type="text" id="chk-modelo"></div>
+            <div class="form-group"><label>Modelo</label><input type="text" id="chk-modelo"></div>
             
-            <label style="font-size: 0.8rem; color: var(--neon-cyan);">📸 Fotos Obrigatórias Entrada (Marque as 12)</label>
             <div class="photo-grid" id="gridIn">
                 <div class="photo-slot" onclick="controlarFoto(this, 'in')">Frente</div><div class="photo-slot" onclick="controlarFoto(this, 'in')">Traseira</div>
                 <div class="photo-slot" onclick="controlarFoto(this, 'in')">Lat. Dir</div><div class="photo-slot" onclick="controlarFoto(this, 'in')">Lat. Esq</div>
@@ -108,22 +107,22 @@
                 <div class="photo-slot" onclick="controlarFoto(this, 'in')">Painel</div><div class="photo-slot" onclick="controlarFoto(this, 'in')">Interior</div>
                 <div class="photo-slot" onclick="controlarFoto(this, 'in')">Teto</div><div class="photo-slot" onclick="controlarFoto(this, 'in')">Avarias</div>
             </div>
-            <button class="btn-save" style="background: var(--neon-green);" onclick="submitChecklist()">GERAR OS E ENVIAR PARA TORRE</button>
+            <button class="btn-save" style="background: var(--neon-green);" onclick="submitChecklist()">ABRIR OS</button>
         </div>
     </section>
 
     <section id="sec-tecnico" class="view-section">
         <div style="max-width: 500px; margin: 0 auto;">
-            <h2 style="color: var(--neon-cyan); text-align: center;">ORDENS EM EXECUÇÃO</h2>
+            <h2 style="color: var(--neon-cyan); text-align: center;">BOX</h2>
             <div id="fila-tecnico"></div>
         </div>
     </section>
 
     <section id="sec-historico" class="view-section">
-        <h2 style="color: var(--neon-cyan); text-align: center;">ARQUIVO MORTO</h2>
+        <h2 style="color: var(--neon-cyan); text-align: center;">HISTÓRICO</h2>
         <div style="overflow-x: auto;">
             <table class="history-table">
-                <thead><tr style="color: var(--neon-cyan);"><th>OS</th><th>Cliente</th><th>Modelo</th><th>KM Saída</th><th>Data Entrega</th></tr></thead>
+                <thead><tr style="color: var(--neon-cyan);"><th>OS</th><th>Cliente</th><th>Modelo</th><th>Data</th></tr></thead>
                 <tbody id="tbody-historico"></tbody>
             </table>
         </div>
@@ -132,48 +131,8 @@
     <div class="modal-overlay" id="modalTriagem">
         <div class="modal-content">
             <h2 id="tri-os" style="color: var(--neon-cyan); margin-top: 0;">TRIAGEM</h2>
-            <p style="font-size: 0.8rem; color: #888;">Defina o roteiro para o técnico:</p>
-            <div style="margin-bottom: 20px;">
-                <label style="display: block; margin-bottom: 10px;"><input type="checkbox" class="tri-check" value="Desmontagem" checked> 1. Desmontagem</label>
-                <label style="display: block; margin-bottom: 10px;"><input type="checkbox" class="tri-check" value="Descontaminação" checked> 2. Descontaminação</label>
-                <label style="display: block; margin-bottom: 10px;"><input type="checkbox" class="tri-check" value="Serviço Principal" checked> 3. Serviço Principal (PPF/Film)</label>
-                <label style="display: block; margin-bottom: 10px;"><input type="checkbox" class="tri-check" value="Montagem" checked> 4. Montagem e Acabamento</label>
-                <label style="display: block; margin-bottom: 10px;"><input type="checkbox" class="tri-check" value="Qualidade" checked> 5. Enviar para Qualidade</label>
-            </div>
-            <button class="btn-save" onclick="salvarTriagem()">LIBERAR PARA O BOX</button>
+            <button class="btn-save" onclick="salvarTriagem()">LIBERAR BOX</button>
             <button onclick="fecharModais()" style="background:none; border:none; color:gray; width:100%; margin-top:15px; cursor:pointer;">Fechar</button>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="modalQualidade">
-        <div class="modal-content" style="border-color: var(--neon-green);">
-            <h2 id="qual-os" style="color: var(--neon-green); margin-top: 0;">INSPEÇÃO DE QUALIDADE</h2>
-            <p style="font-size: 0.8rem;">O serviço está no padrão L.A. Custom?</p>
-            <button class="btn-save" style="background: var(--neon-green);" onclick="aprovarQualidade()">🟢 APROVAR QUALIDADE</button>
-            <button class="btn-save" style="background: var(--neon-red); color: white; margin-top: 10px;" onclick="reprovarQualidade()">🔴 REPROVAR (VOLTAR BOX)</button>
-            <button onclick="fecharModais()" style="background:none; border:none; color:gray; width:100%; margin-top:15px; cursor:pointer;">Sair</button>
-        </div>
-    </div>
-
-    <div class="modal-overlay" id="modalCheckout">
-        <div class="modal-content" style="border-color: var(--neon-orange);">
-            <h2 id="out-os" style="color: var(--neon-orange); margin-top: 0;">CHECK-OUT E ENTREGA</h2>
-            <div class="form-group"><label>KM de Saída</label><input type="number" id="out-km"></div>
-            <div style="margin-bottom: 15px; font-size: 0.8rem;">
-                <label><input type="checkbox" id="out-pertences"> Pertences devolvidos?</label><br>
-                <label><input type="checkbox" id="out-limpeza"> Limpeza interna OK?</label>
-            </div>
-            <label style="font-size: 0.7rem; color: var(--neon-orange);">📸 Fotos de Saída (Obrigatório 12)</label>
-            <div class="photo-grid" id="gridOut">
-                <div class="photo-slot" onclick="controlarFoto(this, 'out')">Frente</div><div class="photo-slot" onclick="controlarFoto(this, 'out')">Traseira</div>
-                <div class="photo-slot" onclick="controlarFoto(this, 'out')">Lat. Dir</div><div class="photo-slot" onclick="controlarFoto(this, 'out')">Lat. Esq</div>
-                <div class="photo-slot" onclick="controlarFoto(this, 'out')">Roda DD</div><div class="photo-slot" onclick="controlarFoto(this, 'out')">Roda TD</div>
-                <div class="photo-slot" onclick="controlarFoto(this, 'out')">Roda DE</div><div class="photo-slot" onclick="controlarFoto(this, 'out')">Roda TE</div>
-                <div class="photo-slot" onclick="controlarFoto(this, 'out')">Painel</div><div class="photo-slot" onclick="controlarFoto(this, 'out')">Interior</div>
-                <div class="photo-slot" onclick="controlarFoto(this, 'out')">Final 1</div><div class="photo-slot" onclick="controlarFoto(this, 'out')">Final 2</div>
-            </div>
-            <button class="btn-save" style="background: var(--neon-orange);" onclick="finalizarEntrega()">ARQUIVAR E ENTREGAR VEÍCULO</button>
-            <button onclick="fecharModais()" style="background:none; border:none; color:gray; width:100%; margin-top:15px; cursor:pointer;">Cancelar</button>
         </div>
     </div>
 
@@ -192,8 +151,19 @@
         const db = firebase.database();
 
         let bancoVeiculos = {};
-        let fIn = 0; let fOut = 0;
+        let fIn = 0;
         let currentPath = null;
+
+        // --- RELÓGIO DE PRODUTIVIDADE ---
+        setInterval(() => { renderizarTorre(); }, 60000); // Atualiza cronômetros a cada 1 minuto
+
+        function calcularTempo(timestamp) {
+            if(!timestamp) return "0m";
+            const diff = Date.now() - timestamp;
+            const mins = Math.floor(diff / 60000);
+            const hrs = Math.floor(mins / 60) ;
+            return hrs > 0 ? `${hrs}h ${mins % 60}m` : `${mins}m`;
+        }
 
         // SYNC
         db.ref('veiculos_ativos').on('value', (s) => {
@@ -208,26 +178,27 @@
             const data = s.val();
             if(data) {
                 Object.values(data).reverse().forEach(v => {
-                    tb.innerHTML += `<tr><td>${v.os}</td><td>${v.nome}</td><td>${v.modelo}</td><td>${v.kmSaida} km</td><td>${v.dataEntrega}</td></tr>`;
+                    tb.innerHTML += `<tr><td>${v.os}</td><td>${v.nome}</td><td>${v.modelo}</td><td>${v.entrega}</td></tr>`;
                 });
             }
         });
 
-        // 1. ABRIR OS
+        // ACTIONS
         function submitChecklist() {
-            if(fIn < 12) { alert("⚠️ Bloqueio Jurídico: Marque as 12 fotos de entrada."); return; }
+            if(fIn < 12) { alert("Marque as 12 fotos!"); return; }
             const nome = document.getElementById('chk-nome').value;
-            const zap = document.getElementById('chk-whatsapp').value;
-            if(!nome || !zap) { alert("Preencha Nome e WhatsApp!"); return; }
+            if(!nome) { alert("Informe o cliente!"); return; }
 
             const id = "OS_" + Date.now();
             const osDisplay = "OS #" + (1040 + Object.keys(bancoVeiculos).length);
 
             const dados = {
-                os: osDisplay, osPath: id, nome: nome, whatsapp: zap,
+                os: osDisplay, osPath: id, nome: nome,
                 placa: document.getElementById('chk-placa').value || "S/P",
                 modelo: document.getElementById('chk-modelo').value || "Veículo",
-                statusTracker: 1, box: "Rodapé", etapas: []
+                statusTracker: 1, box: "Rodapé",
+                checkinTime: Date.now(), // Tempo total de permanência
+                boxTime: Date.now()     // Tempo no box atual
             };
 
             db.ref('veiculos_ativos/' + id).set(dados).then(() => {
@@ -236,91 +207,19 @@
             });
         }
 
-        // 2. TRIAGEM
-        function abrirTriagem(path) {
-            currentPath = path;
-            document.getElementById('tri-os').innerText = bancoVeiculos[path].os;
-            document.getElementById('modalTriagem').style.display = 'flex';
-        }
-
-        function salvarTriagem() {
-            const checks = document.querySelectorAll('.tri-check:checked');
-            let etapas = [];
-            checks.forEach(c => etapas.push({nome: c.value, concluida: false}));
+        function handleDrop(ev, box) {
+            ev.preventDefault();
+            const path = ev.dataTransfer.getData("text");
+            if(box !== 'Rodapé' && bancoVeiculos[path].statusTracker === 1) return alert("Triagem pendente!");
             
-            db.ref('veiculos_ativos/' + currentPath).update({
-                etapas: etapas, statusTracker: 2
-            }).then(() => fecharModais());
-        }
-
-        // 3. TÉCNICO
-        function concluirEtapa(osPath, etapaIndex) {
-            let v = bancoVeiculos[osPath];
-            v.etapas[etapaIndex].concluida = true;
-            
-            // Se for a última etapa ("Enviar para Qualidade")
-            if(etapaIndex === v.etapas.length - 1) {
-                db.ref('veiculos_ativos/' + osPath).update({
-                    etapas: v.etapas, statusTracker: 4 // Status 4 = Qualidade
-                });
-            } else {
-                db.ref('veiculos_ativos/' + osPath).update({ etapas: v.etapas });
-            }
-        }
-
-        // 4. QUALIDADE (GESTOR)
-        function abrirQualidade(path) {
-            currentPath = path;
-            document.getElementById('qual-os').innerText = bancoVeiculos[path].os;
-            document.getElementById('modalQualidade').style.display = 'flex';
-        }
-
-        function aprovarQualidade() {
-            const v = bancoVeiculos[currentPath];
-            db.ref('veiculos_ativos/' + currentPath).update({ statusTracker: 5 }) // 5 = Aguardando Entrega
-            .then(() => {
-                fecharModais();
-                if(confirm("Deseja avisar o cliente no WhatsApp que o carro passou na qualidade?")) {
-                    const msg = `🏁 *L.A. CUSTOM:* Olá, ${v.nome}! O seu ${v.modelo} passou pelo nosso Controle de Qualidade. Estamos preparando os detalhes finais para a entrega!`;
-                    window.open(`https://wa.me/55${v.whatsapp}?text=${encodeURIComponent(msg)}`, '_blank');
-                }
+            // Ao dropar, resetamos o cronômetro do Box (Produtividade)
+            db.ref('veiculos_ativos/' + path).update({ 
+                box: box, 
+                statusTracker: (box === 'Rodapé' ? 2 : 3),
+                boxTime: Date.now() 
             });
         }
 
-        function reprovarQualidade() {
-            let v = bancoVeiculos[currentPath];
-            v.etapas[v.etapas.length - 1].concluida = false; // Abre a última etapa de novo
-            db.ref('veiculos_ativos/' + currentPath).update({
-                statusTracker: 3, etapas: v.etapas // Volta para o Box
-            }).then(() => fecharModais());
-        }
-
-        // 5. CHECK-OUT
-        function abrirCheckout(path) {
-            currentPath = path;
-            document.getElementById('out-os').innerText = bancoVeiculos[path].os;
-            document.getElementById('modalCheckout').style.display = 'flex';
-        }
-
-        function finalizarEntrega() {
-            const km = document.getElementById('out-km').value;
-            if(!km || fOut < 12) { alert("Preencha a KM e as 12 fotos de saída!"); return; }
-            
-            const v = bancoVeiculos[currentPath];
-            const entrega = {
-                ...v, kmSaida: km, dataEntrega: new Date().toLocaleString(), statusTracker: 6
-            };
-
-            db.ref('historico/' + currentPath).set(entrega).then(() => {
-                db.ref('veiculos_ativos/' + currentPath).remove();
-                fecharModais();
-                limparOut();
-                const msg = `✨ *L.A. CUSTOM:* Olá, ${v.nome}! O seu ${v.modelo} está pronto para retirada. Agradecemos a preferência!`;
-                window.open(`https://wa.me/55${v.whatsapp}?text=${encodeURIComponent(msg)}`, '_blank');
-            });
-        }
-
-        // RENDER
         function renderizarTorre() {
             const rodape = document.getElementById('rodape');
             const boxes = document.querySelectorAll('.stage-column');
@@ -331,24 +230,20 @@
                 const card = document.createElement('div');
                 card.className = "car-card";
                 if(v.statusTracker === 1) card.classList.add('status-alert');
-                if(v.statusTracker === 4) card.classList.add('status-quality');
-                if(v.statusTracker === 5) card.classList.add('status-ready');
-                
                 card.draggable = true;
                 card.ondragstart = (e) => e.dataTransfer.setData("text", v.osPath);
+                card.onclick = () => v.statusTracker === 1 ? abrirTriagem(v.osPath) : null;
                 
-                card.onclick = () => {
-                    if(v.statusTracker === 1) abrirTriagem(v.osPath);
-                    else if(v.statusTracker === 4) abrirQualidade(v.osPath);
-                    else if(v.statusTracker === 5) abrirCheckout(v.osPath);
-                };
+                // Exibe o tempo total e o tempo de box
+                const tempoTotal = calcularTempo(v.checkinTime);
+                const tempoBox = calcularTempo(v.boxTime);
 
-                let hint = "Arraste para Box";
-                if(v.statusTracker === 1) hint = "TRIAGEM PENDENTE";
-                if(v.statusTracker === 4) hint = "AGUARDANDO QUALIDADE";
-                if(v.statusTracker === 5) hint = "PRONTO (CHECK-OUT)";
-
-                card.innerHTML = `<span class="os-number">${v.os} | ${v.placa}</span><div class="car-model">${v.modelo}</div><span class="click-hint">${hint}</span>`;
+                card.innerHTML = `
+                    <div class="timer-badge" title="Tempo no Local">📍 ${tempoBox}</div>
+                    <span class="os-number">${v.os} | ${v.placa}</span>
+                    <div class="car-model">${v.modelo}</div>
+                    <div style="font-size: 0.6rem; color: #666; margin-top: 5px;">Total Pátio: ${tempoTotal}</div>
+                `;
 
                 if(v.box === "Rodapé") rodape.appendChild(card);
                 else {
@@ -358,54 +253,47 @@
             });
         }
 
-        function renderizarFilaTecnico() {
-            const f = document.getElementById('fila-tecnico');
-            f.innerHTML = "";
-            Object.values(bancoVeiculos).filter(v => v.statusTracker >= 2 && v.statusTracker < 4).forEach(v => {
-                let botoes = "";
-                v.etapas.forEach((et, idx) => {
-                    if(!et.concluida) {
-                        const style = idx === 0 || v.etapas[idx-1].concluida ? "" : "opacity:0.3; pointer-events:none;";
-                        botoes += `<button onclick="concluirEtapa('${v.osPath}', ${idx})" style="width:100%; margin-top:5px; background:#222; color:var(--neon-cyan); border:1px solid var(--neon-cyan); padding:8px; font-size:0.7rem; ${style}">${idx+1}. ${et.nome}</button>`;
-                    } else {
-                        botoes += `<div style="width:100%; margin-top:5px; background:var(--neon-green); color:black; padding:8px; font-size:0.7rem; font-weight:bold; text-align:center;">✓ ${et.nome}</div>`;
-                    }
-                });
-
-                f.innerHTML += `<div class="car-card" style="border-left-color:var(--neon-cyan)">
-                    <span class="os-number">${v.os} (${v.box})</span><div class="car-model">${v.modelo}</div>
-                    <div style="margin-top:10px;">${botoes}</div>
-                </div>`;
-            });
-        }
-
-        // HELPERS
-        window.switchTab = (id, btn) => {
+        // Outros Helpers
+        function switchTab(id, btn) {
             document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             btn.classList.add('active');
-        };
-        window.handleDrop = (ev, box) => {
-            ev.preventDefault();
-            const path = ev.dataTransfer.getData("text");
-            if(box !== 'Rodapé' && bancoVeiculos[path].statusTracker === 1) return alert("Triagem pendente!");
-            db.ref('veiculos_ativos/' + path).update({ box: box, statusTracker: (box === 'Rodapé' ? 2 : 3) });
-        };
-        window.allowDrop = (e) => e.preventDefault();
-        window.fecharModais = () => document.querySelectorAll('.modal-overlay').forEach(m => m.style.display='none');
-        window.controlarFoto = (el, type) => {
-            el.classList.toggle('uploaded');
-            let inc = el.classList.contains('uploaded') ? 1 : -1;
-            if(type === 'in') fIn += inc; else fOut += inc;
-        };
-        function limparIn() { 
-            ['chk-nome', 'chk-whatsapp', 'chk-placa', 'chk-modelo'].forEach(i => document.getElementById(i).value = "");
-            document.querySelectorAll('#gridIn .photo-slot').forEach(s => s.classList.remove('uploaded')); fIn = 0;
         }
-        function limparOut() {
-            document.getElementById('out-km').value = "";
-            document.querySelectorAll('#gridOut .photo-slot').forEach(s => s.classList.remove('uploaded')); fOut = 0;
+        function renderizarFilaTecnico() {
+            const f = document.getElementById('fila-tecnico');
+            f.innerHTML = "";
+            Object.values(bancoVeiculos).filter(v => v.statusTracker >= 2).forEach(v => {
+                f.innerHTML += `<div class="car-card" style="border-left-color:var(--neon-cyan)">
+                    <span class="os-number">${v.os} (${v.box})</span><div class="car-model">${v.modelo}</div>
+                    <button onclick="concluirServico('${v.osPath}')" style="width:100%; margin-top:10px; background:var(--neon-cyan); border:none; padding:8px; cursor:pointer; font-weight:bold;">CONCLUIR</button>
+                </div>`;
+            });
+        }
+        function concluirServico(path) {
+            const v = bancoVeiculos[path];
+            db.ref('historico/' + path).set({...v, entrega: new Date().toLocaleString()}).then(() => db.ref('veiculos_ativos/' + path).remove());
+        }
+        function abrirTriagem(path) {
+            currentPath = path;
+            document.getElementById('modal-os-title').innerText = bancoVeiculos[path].os;
+            document.getElementById('modalTriagem').style.display = 'flex';
+        }
+        function finalizarTriagem() {
+            db.ref('veiculos_ativos/' + currentPath).update({ statusTracker: 2 });
+            fecharModais();
+        }
+        function controlarFoto(el) {
+            el.classList.toggle('uploaded');
+            fIn += el.classList.contains('uploaded') ? 1 : -1;
+            el.innerText = el.classList.contains('uploaded') ? "✓ OK" : el.innerText.replace("✓ OK", "");
+        }
+        function allowDrop(e) { e.preventDefault(); }
+        function fecharModais() { document.getElementById('modalTriagem').style.display='none'; }
+        function limparIn() { 
+            ['chk-nome', 'chk-placa', 'chk-modelo'].forEach(i => document.getElementById(i).value = "");
+            document.querySelectorAll('.photo-slot').forEach(s => { s.classList.remove('uploaded'); s.innerText = s.innerText.replace("✓ OK", ""); });
+            fIn = 0;
         }
     </script>
 </body>
