@@ -470,7 +470,7 @@
                     btn.className = "tech-btn completed"; btn.disabled = true;
                     btn.innerHTML = `Concluído: ${nomePasso}`;
                     if (stepIndex === v.ultimoPassoConcluido) {
-                        btn.innerHTML += ` <span class='undo-btn' onclick='undoDynamicStep(event, "${trabalhoAbertoPath}", ${stepIndex})'>❌ Desfazer</span>`;
+                        btn.innerHTML += ` <span class='undo-btn' onclick='undoDynamicStep(event, "${trabalhoAbertoPath}", ${stepIndex})'>❌ CANCELAR</span>`;
                     }
                 } else if (stepIndex === v.ultimoPassoConcluido + 1) {
                     btn.className = "tech-btn active"; btn.disabled = false;
@@ -492,7 +492,7 @@
             if (nomePasso === "Enviar para Qualidade" || stepIndex === v.etapas.length - 1) newStatus = 5;
 
             db.ref('veiculos_ativos/' + path).update({ ultimoPassoConcluido: stepIndex, statusTracker: newStatus });
-            if(newStatus === 5) { alert("Serviço concluído! O card está VERDE na Torre do Gestor."); voltarParaLobby(); }
+            if(newStatus === 5) { alert("Serviço concluído pelo Técnico! O card está VERDE na Torre. Peça ao Gestor para avaliar."); voltarParaLobby(); }
         }
 
         function undoDynamicStep(event, path, stepIndex) {
@@ -533,11 +533,32 @@
             if (!fotosOk && !confirm("Faltam fotos na saída. Isso quebra a blindagem. Liberar sem fotos?")) return;
 
             const v = bancoVeiculos[currentOSPath];
-            const entrega = { os: v.os, placa: v.placa, cliente: v.cliente, whatsapp: v.whatsapp, modelo: v.modelo, km: km, dataEntrega: new Date().toLocaleString(), fotosOk: fotosOk };
+            if (!v) return alert("Erro interno: Veículo não encontrado no sistema.");
+
+            // PROTEÇÃO: O Firebase trava silenciosamente se receber um campo "undefined".
+            // Os operadores ' || "" ' garantem que, se faltar um dado antigo, ele salve sem travar a tela.
+            const entrega = { 
+                os: v.os || "S/N", 
+                placa: v.placa || "S/N", 
+                cliente: v.cliente || "S/N", 
+                whatsapp: v.whatsapp || "", 
+                modelo: v.modelo || "S/N", 
+                km: km, 
+                dataEntrega: new Date().toLocaleString(), 
+                fotosOk: fotosOk 
+            };
 
             db.ref('historico/' + currentOSPath).set(entrega).then(() => {
                 db.ref('veiculos_ativos/' + currentOSPath).remove();
-                fecharModalCheckout(); document.getElementById('chk-km-saida').value = ''; document.querySelectorAll('#photoGridOut .photo-slot').forEach(s => s.classList.remove('uploaded')); uploadedPhotosOut = 0;
+                fecharModalCheckout(); 
+                document.getElementById('chk-km-saida').value = ''; 
+                document.getElementById('chk-pertences').checked = false; // Resetando o checkbox para o próximo carro
+                document.getElementById('chk-servicos').checked = false;  // Resetando o checkbox para o próximo carro
+                document.querySelectorAll('#photoGridOut .photo-slot').forEach(s => s.classList.remove('uploaded')); 
+                uploadedPhotosOut = 0;
+            }).catch(erro => {
+                // Se der qualquer outro erro na nuvem, agora ele te avisa na tela!
+                alert("Erro ao tentar arquivar no banco de dados: " + erro.message);
             });
         }
 
