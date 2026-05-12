@@ -9,7 +9,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
     <style>
-        /* SEU CSS ORIGINAL INTACTO */
         :root {
             --bg-color: #0d0d0d;
             --neon-cyan: #00ffff;
@@ -39,40 +38,31 @@
         .car-card { background: var(--card-bg); border-radius: 6px; padding: 12px; margin-bottom: 15px; border-left: 4px solid #555; box-shadow: 0 4px 15px rgba(0,0,0,0.5); cursor: pointer; position: relative; transition: 0.3s; }
         .car-card:hover { transform: scale(1.02); box-shadow: 0 0 15px var(--neon-cyan); border-left-color: var(--neon-cyan); }
         .os-number { font-size: 0.7rem; color: var(--neon-cyan); font-weight: bold; }
-        .car-model { font-size: 1rem; margin: 5px 0; font-weight: bold; }
-        .consultant { font-size: 0.75rem; color: #aaa; }
+        .car-model { font-size: 1rem; margin: 5px 0 5px 0; font-weight: bold; }
+        
+        .service-preview { font-size: 0.75rem; color: #00ffff; font-style: italic; margin-bottom: 5px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; border-top: 1px dashed #333; padding-top: 5px; }
+
         .click-hint { font-size: 0.65rem; color: var(--neon-cyan); margin-top: 8px; display: inline-block; background: #222; padding: 2px 6px; border-radius: 3px; }
 
         .status-alert { border-left-color: var(--neon-red) !important; background: rgba(255, 0, 0, 0.1) !important; animation: pulse-red 2s infinite; }
-        @keyframes pulse-red { 0% { box-shadow: 0 0 5px var(--neon-red); } 50% { box-shadow: 0 0 20px var(--neon-red); } 100% { box-shadow: 0 0 5px var(--neon-red); } }
-        
         .status-quality { border-left-color: var(--neon-green) !important; background: rgba(57, 255, 20, 0.1) !important; animation: pulse-green-card 2s infinite; }
-        @keyframes pulse-green-card { 0% { box-shadow: 0 0 5px var(--neon-green); } 50% { box-shadow: 0 0 20px var(--neon-green); } 100% { box-shadow: 0 0 5px var(--neon-green); } }
 
-        /* NOVO CSS: BADGE DE TEMPO E AGENDA */
         .timer-badge { font-size: 0.65rem; background: #222; color: var(--neon-cyan); padding: 2px 6px; border-radius: 4px; position: absolute; top: 10px; right: 10px; border: 1px dashed #444; }
-        
         .agenda-column { flex: 1; background: rgba(255, 255, 255, 0.02); border-radius: 8px; border: 1px dashed #ff9900; display: flex; flex-direction: column; padding: 10px; min-width: 160px; transition: 0.3s; }
-        .agenda-column:hover { background: rgba(255, 153, 0, 0.05); }
-
         .footer-agenda { margin-top: 20px; border-top: 1px solid #333; padding-top: 20px; min-height: 120px; background: #111; display: flex; gap: 15px; padding: 15px; border: 1px dashed #444; overflow-x: auto;}
         .log-panel { margin-top: 20px; background: #000; border: 1px solid #333; padding: 15px; height: 120px; overflow-y: auto; font-size: 0.8rem; color: #aaa; }
         .log-entry { border-bottom: 1px dashed #222; padding: 5px 0; }
         .log-entry span { color: var(--neon-cyan); font-weight: bold; }
 
-        /* MODAIS GERAIS */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; overflow-y: auto; padding: 20px 0;}
         .modal-content { background: #111; border: 2px solid var(--neon-cyan); padding: 25px; border-radius: 8px; width: 90%; max-width: 450px; box-shadow: 0 0 30px rgba(0, 255, 255, 0.2); margin: auto;}
         .modal-title { color: var(--neon-cyan); margin-top: 0; border-bottom: 1px dashed #444; padding-bottom: 10px; }
         .checkbox-group { margin: 15px 0; }
         .checkbox-group label { display: block; margin-bottom: 10px; cursor: pointer; color: white; font-size: 1rem; background: #222; padding: 10px; border-radius: 4px; border: 1px solid #333; transition: 0.2s;}
-        .checkbox-group label:hover { background: #333; border-color: var(--neon-cyan); }
         .checkbox-group input { margin-right: 10px; transform: scale(1.2); cursor: pointer; accent-color: var(--neon-cyan); }
         .btn-save { width: 100%; padding: 12px; background: var(--neon-cyan); color: black; font-weight: bold; border: none; cursor: pointer; font-size: 1rem; margin-top: 10px; transition: 0.3s;}
-        .btn-save:hover { filter: brightness(1.2); }
         .btn-cancel { width: 100%; padding: 10px; background: transparent; color: #888; border: none; cursor: pointer; margin-top: 5px; text-decoration: underline; }
 
-        /* CHECK-IN */
         .form-container { max-width: 600px; margin: 0 auto; background: #111; padding: 20px; border: 1px solid #333; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 5px; color: var(--neon-cyan); font-size: 0.9rem; }
@@ -83,7 +73,6 @@
         .btn-submit { width: 100%; padding: 15px; background: var(--neon-cyan); color: black; font-weight: bold; font-size: 1.1rem; border: none; cursor: pointer; margin-top: 20px; }
         .btn-new-vehicle { width: 100%; max-width: 400px; padding: 20px; background: var(--neon-green); color: black; font-weight: bold; font-size: 1.2rem; border: none; cursor: pointer; border-radius: 8px; box-shadow: 0 0 15px rgba(57, 255, 20, 0.4); transition: 0.3s;}
         
-        /* TÉCNICO */
         .tech-box { max-width: 600px; margin: 0 auto; text-align: center; }
         .tech-btn { width: 100%; padding: 20px; margin-bottom: 15px; background: #222; color: #555; border: 2px solid #444; font-size: 1.1rem; font-weight: bold; text-transform: uppercase; transition: 0.3s; position: relative; }
         .tech-btn.active { background: var(--neon-cyan); color: black; border-color: var(--neon-cyan); cursor: pointer; }
@@ -91,7 +80,6 @@
         .undo-btn { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: #ff003c; color: white; padding: 5px 10px; border-radius: 4px; font-size: 0.9rem; cursor: pointer; z-index: 10;}
         .btn-voltar { background: transparent; color: var(--neon-cyan); border: 1px solid var(--neon-cyan); padding: 8px 15px; cursor: pointer; float: left; border-radius: 4px; font-weight: bold; transition: 0.3s; }
 
-        /* RASTREIO CLIENTE */
         .tracker-container { max-width: 400px; margin: 0 auto; background: #111; padding: 20px; border-radius: 10px; border: 1px solid #333;}
         .timeline { margin-top: 20px; border-left: 2px solid #333; padding-left: 20px; }
         .timeline-item { position: relative; margin-bottom: 25px; padding-left: 15px; opacity: 0.4; transition: 0.5s;}
@@ -106,14 +94,12 @@
         .cliente-select-box { background: #1a1a1a; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; border: 1px dashed var(--neon-cyan); }
         .cliente-select-box select { width: 100%; padding: 10px; background: #000; border: 1px solid var(--neon-cyan); color: white; font-weight: bold; margin-top: 10px; cursor: pointer;}
         
-        /* HISTÓRICO */
         .history-table { width: 100%; border-collapse: collapse; background: #111; color: white; font-size: 0.9rem; text-align: left; margin-top: 20px; box-shadow: 0 0 15px rgba(0, 255, 255, 0.1);}
         .history-table th { background: #222; color: var(--neon-cyan); padding: 15px; border-bottom: 2px solid var(--neon-cyan); text-transform: uppercase; font-size: 0.8rem;}
         .history-table td { padding: 15px; border-bottom: 1px dashed #333; }
         .history-table tr:hover { background: #1a1a1a; }
         .badge-ok { background: rgba(57, 255, 20, 0.1); color: var(--neon-green); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--neon-green); font-size: 0.75rem; font-weight: bold;}
         .badge-warn { background: rgba(255, 0, 0, 0.1); color: var(--neon-red); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--neon-red); font-size: 0.75rem; font-weight: bold;}
-        @keyframes pulse-green { 0% { box-shadow: 0 0 5px var(--neon-green); } 50% { box-shadow: 0 0 15px var(--neon-green); } 100% { box-shadow: 0 0 5px var(--neon-green); } }
     </style>
 </head>
 <body>
@@ -150,8 +136,8 @@
         </div>
 
         <h3 style="text-align: center; color: #ff9900; border-bottom: 1px dashed #ff9900; padding-bottom: 10px; margin-top: 40px; margin-bottom: 15px;">AGENDA DA SEMANA (PRÓXIMOS 7 DIAS)</h3>
-        <div class="dashboard" id="agenda-semana" style="height: auto; min-height: 20vh; padding-bottom: 10px;">
-            </div>
+        <div class="dashboard" id="agenda-semana" style="height: auto; min-height: 20vh; padding-bottom: 10px;"></div>
+
         <div class="log-panel" id="logPanel">
             <div class="log-entry"><span>[Sistema]</span> Torre na Nuvem Inicializada. Cronômetros Ativos.</div>
         </div>
@@ -164,6 +150,12 @@
 
         <div class="form-container" id="container-formulario" style="display: none;">
             <h2 style="color: var(--neon-cyan); text-align: center; margin-top: 0;">CHECK-IN DE VEÍCULO</h2>
+            
+            <div style="border: 1px dashed var(--neon-cyan); padding: 15px; margin-bottom: 20px; background: rgba(0, 255, 255, 0.05);">
+                <div class="form-group"><label>Número da OS</label><input type="text" id="chk-os-manual" placeholder="Ex: 1055" style="font-size: 1.2rem; font-weight: bold; color: var(--neon-cyan);"></div>
+                <div class="form-group"><label>Descrição do Serviço Solicitado</label><textarea id="chk-descricao" placeholder="Ex: Lavagem detalhada, vitrificação e PPF frontal." rows="3" style="resize: vertical;"></textarea></div>
+            </div>
+
             <div style="border: 1px dashed var(--neon-green); padding: 15px; margin-bottom: 20px; background: rgba(57,255,20,0.05);">
                 <div class="form-group"><label>Nome do Cliente</label><input type="text" id="chk-nome" placeholder="Ex: João Silva"></div>
                 <div class="form-group"><label>📱 WhatsApp (Para Rastreio)</label><input type="tel" id="chk-whatsapp" placeholder="Ex: 11999999999"></div>
@@ -229,7 +221,19 @@
     <div class="modal-overlay" id="triagemModal">
         <div class="modal-content">
             <h2 class="modal-title">TRIAGEM DE SERVIÇOS</h2>
-            <div style="margin-bottom: 15px; color: #aaa;"><strong id="modal-os" style="color: white;">OS</strong><br><span id="modal-modelo">Veículo</span></div>
+            
+            <div style="margin-bottom: 15px; color: #aaa; border-bottom: 1px dashed #333; padding-bottom: 15px;">
+                <strong id="modal-os" style="color: var(--neon-cyan); font-size: 1.2rem;">OS</strong>
+                <span style="float: right; font-size: 0.8rem; background: #222; padding: 2px 6px; border-radius: 4px;" id="modal-hora">00:00</span><br>
+                <span style="color: white; font-weight: bold; font-size: 1.1rem; display: block; margin-top: 5px;" id="modal-cliente">Cliente</span>
+                <span id="modal-modelo">Veículo</span>
+            </div>
+
+            <div style="margin-bottom: 20px; background: #000; padding: 10px; border: 1px solid #333; border-radius: 4px;">
+                <label style="color: var(--neon-cyan); font-size: 0.8rem; font-weight: bold; display: block; margin-bottom: 5px;">DESCRIÇÃO DO SERVIÇO SOLICITADO:</label>
+                <span id="modal-descricao" style="color: #ddd; font-size: 0.9rem; line-height: 1.4;"></span>
+            </div>
+
             <div class="checkbox-group">
                 <label><input type="checkbox" id="chk-desmontagem" value="Desmontagem" checked> 1. Iniciar Desmontagem</label>
                 <label><input type="checkbox" id="chk-descontaminacao" value="Descontaminação" checked> 2. Descontaminação</label>
@@ -298,7 +302,6 @@
 
         const AS_7_ETAPAS = ["OS Aberta no Sistema", "Triagem Concluída", "Preparação/Desmontagem", "Serviço Principal", "Montagem e Acabamento", "Controle de Qualidade", "Pronto para Retirada"];
 
-        // RELÓGIO DE PRODUTIVIDADE E DA AGENDA
         setInterval(() => { renderizarTorre(); }, 60000);
         function calcularTempo(ts) {
             if(!ts) return "0m";
@@ -308,7 +311,6 @@
             return hrs > 0 ? `${hrs}h ${mins%60}m` : `${mins}m`;
         }
 
-        // SYNC FIREBASE
         db.ref('veiculos_ativos').on('value', (s) => {
             bancoVeiculos = s.val() || {};
             renderizarTorre();
@@ -328,7 +330,6 @@
             });
         });
 
-        // 1. ABRIR OS (CHECK-IN)
         function abrirNovoCheckin() {
             document.getElementById('container-btn-novo').style.display = 'none';
             document.getElementById('container-formulario').style.display = 'block';
@@ -339,28 +340,30 @@
         function uploadPhotoIn(el) { if(!el.classList.contains('uploaded')) { el.classList.add('uploaded'); el.innerText = "✓ OK"; uploadedPhotosIn++; } }
 
         function submitChecklist() {
-            if (uploadedPhotosIn < 12) {
-                if(!confirm("Aviso: Faltam fotos. Isso quebra o protocolo de segurança. Confirma?")) return;
-            }
+            const osManual = document.getElementById('chk-os-manual').value;
+            if(!osManual) { alert("Atenção: Por favor, digite o Número da OS antes de continuar."); return; }
+            if (uploadedPhotosIn < 12) { if(!confirm("Aviso: Faltam fotos. Isso quebra o protocolo de segurança. Confirma?")) return; }
             const nome = document.getElementById('chk-nome').value || "Cliente Expresso";
             const zap = document.getElementById('chk-whatsapp').value.replace(/\D/g, '');
             const modelo = (document.getElementById('chk-modelo').value || "VEÍCULO") + " (" + (document.getElementById('chk-cor').value || "Indefinida") + ")";
             const placa = document.getElementById('chk-placa').value || "SEM PLACA";
+            const descricaoServico = document.getElementById('chk-descricao').value || "Nenhuma descrição informada.";
 
             const id = "OS_" + Date.now();
-            const osDisplay = "OS #" + (1040 + Object.keys(bancoVeiculos).length);
+            const osDisplay = "OS #" + osManual;
+            const horaAtual = new Date().toLocaleTimeString().substring(0, 5);
 
             const dados = {
                 os: osDisplay, osPath: id, cliente: nome, whatsapp: zap, placa: placa, modelo: modelo,
+                descricao: descricaoServico, horaAbertura: horaAtual,
                 statusTracker: 1, box: "Rodapé", checkinTime: Date.now(), boxTime: Date.now(), tecnico: "Aguardando", isError: uploadedPhotosIn < 12
             };
 
             db.ref('veiculos_ativos/' + id).set(dados).then(() => {
-                addLog(`✅ OS gerada para ${modelo}.`); alert("OS Aberta! Vá para a Torre."); cancelarCheckin(); switchTab('sec-torre', document.getElementById('btn-torre'));
+                addLog(`✅ ${osDisplay} gerada para ${modelo}.`); alert("OS Aberta! Vá para a Torre."); cancelarCheckin(); switchTab('sec-torre', document.getElementById('btn-torre'));
             });
         }
 
-        // 2. TORRE DE CONTROLE
         function allowDrop(ev) { ev.preventDefault(); }
         function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
         
@@ -368,15 +371,12 @@
             ev.preventDefault();
             const path = ev.dataTransfer.getData("text");
             const v = bancoVeiculos[path];
-            
-            // Regra de triagem
             if(boxName !== 'Rodapé' && !boxName.startsWith('Agenda') && v.statusTracker < 2) return alert("Faça a Triagem clicando no veículo antes de mover para o Box!");
             
-            // Regras de Capacidade (Limites inteligentes)
-            let maxCapacity = 1; // Padrão para Boxes 1 a 5
+            let maxCapacity = 1;
             if (boxName === 'Box 6' || boxName === 'Box 7') maxCapacity = 2;
             if (boxName === 'Corredor' || boxName === 'Estacionamento') maxCapacity = 7;
-            if (boxName === 'Recepção') maxCapacity = 99; // Sem limite prático
+            if (boxName === 'Recepção') maxCapacity = 99;
             
             let targetCol = ev.target.closest('.stage-column');
             if(targetCol && boxName !== 'Rodapé' && !boxName.startsWith('Agenda')) {
@@ -391,15 +391,12 @@
         function renderizarTorre() {
             const rodape = document.getElementById('rodape');
             const boxes = document.querySelectorAll('.stage-column'); 
-            
-            // Limpa o rodapé e recria o cabeçalho respeitando o data-name
             rodape.innerHTML = ""; 
             boxes.forEach(b => {
                 let nomeBox = b.getAttribute('data-name');
                 b.innerHTML = `<div class="stage-header">${nomeBox}</div>`;
             });
 
-            // GERAÇÃO DINÂMICA DOS DIAS DA AGENDA
             const agendaContainer = document.getElementById('agenda-semana');
             agendaContainer.innerHTML = "";
             const diasSemana = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
@@ -413,7 +410,6 @@
                 </div>`;
             }
 
-            // RENDERIZAÇÃO DOS CARDS
             Object.values(bancoVeiculos).forEach(v => {
                 const card = document.createElement('div');
                 card.className = "car-card";
@@ -434,11 +430,12 @@
                 if(v.statusTracker === 5) hint = "✅ AGUARDANDO QUALIDADE";
                 if(v.statusTracker === 6) hint = "🟠 PRONTO P/ ENTREGA (CLIQUE)";
 
+                // CARD ATUALIZADO: Nome do cliente removido, Serviço em destaque neon suave
                 card.innerHTML = `
                     <div class="timer-badge">⏱️ ${calcularTempo(v.boxTime)}</div>
                     <span class="os-number">${v.os} | Placa: ${v.placa}</span>
                     <div class="car-model">${v.modelo}</div>
-                    <div class="consultant">Cliente: ${v.cliente}</div>
+                    <div class="service-preview">${v.descricao || "Sem descrição."}</div>
                     <span class="click-hint">${hint}</span>
                 `;
 
@@ -453,24 +450,23 @@
                             alocadoNaAgenda = true;
                         }
                     });
-                    if(!alocadoNaAgenda) {
-                        rodape.appendChild(card);
-                    }
+                    if(!alocadoNaAgenda) rodape.appendChild(card);
                 } else {
-                    // Busca a coluna correta pelo data-name do HTML
                     boxes.forEach(col => {
-                        if(col.getAttribute('data-name') === v.box) {
-                            col.appendChild(card);
-                        }
+                        if(col.getAttribute('data-name') === v.box) col.appendChild(card);
                     });
                 }
             });
         }
 
         function abrirModalTriagem(path) {
-            currentOSPath = path; currentModel = bancoVeiculos[path].modelo;
-            document.getElementById('modal-os').innerText = bancoVeiculos[path].os;
+            let v = bancoVeiculos[path];
+            currentOSPath = path; currentModel = v.modelo;
+            document.getElementById('modal-os').innerText = v.os;
             document.getElementById('modal-modelo').innerText = currentModel;
+            document.getElementById('modal-cliente').innerText = "👤 " + (v.cliente || "Cliente Expresso");
+            document.getElementById('modal-hora').innerText = "⏱️ Aberto às " + (v.horaAbertura || "--:--");
+            document.getElementById('modal-descricao').innerText = v.descricao || "Sem descrição.";
             document.getElementById('triagemModal').style.display = 'flex';
         }
 
@@ -483,12 +479,10 @@
             if(document.getElementById('chk-ppf').checked) passos.push("Serviço Principal");
             if(document.getElementById('chk-montagem').checked) passos.push("Montagem e Acabamento");
             if(document.getElementById('chk-qualidade').checked) passos.push("Enviar para Qualidade");
-
             db.ref('veiculos_ativos/' + currentOSPath).update({ statusTracker: 2, etapas: passos, ultimoPassoConcluido: -1 });
             fecharModal(); addLog(`Triagem de ${currentModel} salva.`);
         }
 
-        // 3. ABA DO TÉCNICO
         function renderizarFilaTecnico() {
             let container = document.getElementById('fila-cards-tecnico');
             container.innerHTML = "";
@@ -500,7 +494,7 @@
                 card.onclick = () => abrirExecucaoTecnico(v.osPath);
                 card.innerHTML = `
                     <span class="os-number">${v.os}</span><div class="car-model">${v.modelo}</div>
-                    <div style="color: var(--neon-cyan); font-size: 0.8rem; margin-top: 5px;">📍 Local: ${v.box === 'Rodapé' || v.box.startsWith('Agenda') ? 'Aguardando Gestor Mover para o Box' : v.box}</div>
+                    <div style="color: var(--neon-cyan); font-size: 0.8rem; margin-top: 5px;">📍 Local: ${v.box === 'Rodapé' || v.box.startsWith('Agenda') ? 'Aguardando Gestor Mover' : v.box}</div>
                     <span class="click-hint" style="background: var(--neon-green); color: black; font-weight: bold; margin-top: 10px;">👆 ENTRAR NO SERVIÇO</span>
                 `;
                 container.appendChild(card);
@@ -527,13 +521,10 @@
 
             v.etapas.forEach((nomePasso, stepIndex) => {
                 let btn = document.createElement('button');
-                
                 if (stepIndex <= v.ultimoPassoConcluido) {
                     btn.className = "tech-btn completed"; btn.disabled = true;
                     btn.innerHTML = `Concluído: ${nomePasso}`;
-                    if (stepIndex === v.ultimoPassoConcluido) {
-                        btn.innerHTML += ` <span class='undo-btn' onclick='undoDynamicStep(event, "${trabalhoAbertoPath}", ${stepIndex})'>❌ CANCELAR</span>`;
-                    }
+                    if (stepIndex === v.ultimoPassoConcluido) { btn.innerHTML += ` <span class='undo-btn' onclick='undoDynamicStep(event, "${trabalhoAbertoPath}", ${stepIndex})'>❌ CANCELAR</span>`; }
                 } else if (stepIndex === v.ultimoPassoConcluido + 1) {
                     btn.className = "tech-btn active"; btn.disabled = false;
                     btn.innerHTML = `${stepIndex + 1}. ${nomePasso}`;
@@ -552,9 +543,8 @@
             if (nomePasso.includes("Desmontagem") || nomePasso.includes("Descontaminação")) newStatus = 3;
             if (nomePasso.includes("Principal")) newStatus = 4;
             if (nomePasso === "Enviar para Qualidade" || stepIndex === v.etapas.length - 1) newStatus = 5;
-
             db.ref('veiculos_ativos/' + path).update({ ultimoPassoConcluido: stepIndex, statusTracker: newStatus });
-            if(newStatus === 5) { alert("Serviço concluído pelo Técnico! O card está VERDE na Torre. Peça ao Gestor para avaliar."); voltarParaLobby(); }
+            if(newStatus === 5) { alert("Serviço concluído pelo Técnico!"); voltarParaLobby(); }
         }
 
         function undoDynamicStep(event, path, stepIndex) {
@@ -564,7 +554,6 @@
             db.ref('veiculos_ativos/' + path).update({ ultimoPassoConcluido: stepIndex - 1, statusTracker: newStatus });
         }
 
-        // 4. QUALIDADE E CHECKOUT
         function abrirModalQualidade(path) {
             currentOSPath = path; currentModel = bancoVeiculos[path].modelo;
             document.getElementById('modal-qualidade-os').innerText = bancoVeiculos[path].os;
@@ -592,22 +581,10 @@
             let km = document.getElementById('chk-km-saida').value;
             if(!km || !document.getElementById('chk-pertences').checked || !document.getElementById('chk-servicos').checked) return alert("Preencha KM e confirme os serviços!");
             let fotosOk = uploadedPhotosOut >= 12;
-            if (!fotosOk && !confirm("Faltam fotos na saída. Isso quebra a blindagem. Liberar sem fotos?")) return;
-
+            if (!fotosOk && !confirm("Faltam fotos na saída. Liberar sem fotos?")) return;
             const v = bancoVeiculos[currentOSPath];
-            if (!v) return alert("Erro interno: Veículo não encontrado no sistema.");
-
-            const entrega = { 
-                os: v.os || "S/N", 
-                placa: v.placa || "S/N", 
-                cliente: v.cliente || "S/N", 
-                whatsapp: v.whatsapp || "", 
-                modelo: v.modelo || "S/N", 
-                km: km, 
-                dataEntrega: new Date().toLocaleString(), 
-                fotosOk: fotosOk 
-            };
-
+            if (!v) return alert("Erro interno: Veículo não encontrado.");
+            const entrega = { os: v.os || "S/N", placa: v.placa || "S/N", cliente: v.cliente || "S/N", whatsapp: v.whatsapp || "", modelo: v.modelo || "S/N", km: km, dataEntrega: new Date().toLocaleString(), fotosOk: fotosOk };
             db.ref('historico/' + currentOSPath).set(entrega).then(() => {
                 db.ref('veiculos_ativos/' + currentOSPath).remove();
                 fecharModalCheckout(); 
@@ -616,15 +593,12 @@
                 document.getElementById('chk-servicos').checked = false;  
                 document.querySelectorAll('#photoGridOut .photo-slot').forEach(s => s.classList.remove('uploaded')); 
                 uploadedPhotosOut = 0;
-            }).catch(erro => {
-                alert("Erro ao tentar arquivar no banco de dados: " + erro.message);
-            });
+            }).catch(erro => alert("Erro ao arquivar: " + erro.message));
         }
 
-        // 5. RASTREIO CLIENTE
         function atualizarDropdownCliente() {
             let sel = document.getElementById('select-os-cliente');
-            sel.innerHTML = '<option value="">-- Selecione a OS para Rastrear --</option>';
+            sel.innerHTML = '<option value="">-- Selecione a OS --</option>';
             Object.values(bancoVeiculos).forEach(v => { sel.innerHTML += `<option value="${v.osPath}">${v.os} | ${v.placa}</option>`; });
             if(Object.keys(bancoVeiculos).length > 0 && sel.value === "") { sel.value = Object.keys(bancoVeiculos)[0]; renderizarVisaoCliente(); }
         }
@@ -638,7 +612,6 @@
             container.innerHTML = "";
             let st = v.statusTracker;
             if(st > 5) st = 5; 
-
             AS_7_ETAPAS.forEach((titulo, idx) => {
                 let passoNum = idx + 1;
                 let classe = "timeline-item" + (passoNum < st ? " completed" : (passoNum === st ? " active" : ""));
@@ -647,9 +620,15 @@
             });
         }
 
-        // Helpers Extras
         function switchTab(id, btn) { document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active')); document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); document.getElementById(id).classList.add('active'); btn.classList.add('active'); if(id==='sec-cliente')atualizarDropdownCliente();}
-        function limparFormularioCheckin() { ['chk-nome','chk-whatsapp','chk-placa','chk-modelo','chk-cor'].forEach(i => document.getElementById(i).value=''); document.querySelectorAll('#photoGridIn .photo-slot').forEach(s => s.classList.remove('uploaded')); uploadedPhotosIn = 0; }
+        function limparFormularioCheckin() { 
+            ['chk-os-manual','chk-descricao','chk-nome','chk-whatsapp','chk-placa','chk-modelo','chk-cor'].forEach(i => {
+                let el = document.getElementById(i);
+                if(el) el.value='';
+            }); 
+            document.querySelectorAll('#photoGridIn .photo-slot').forEach(s => s.classList.remove('uploaded')); 
+            uploadedPhotosIn = 0; 
+        }
         function addLog(m) { const p = document.getElementById('logPanel'); const e = document.createElement('div'); e.className = 'log-entry'; e.innerHTML = `<span>[${new Date().toLocaleTimeString()}]</span> ${m}`; p.prepend(e); }
     </script>
 </body>
