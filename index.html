@@ -137,12 +137,16 @@
         <div class="footer-agenda" id="rodape" ondragover="allowDrop(event)" ondrop="drop(event, 'Rodapé')"></div>
 
         <div class="dashboard" style="margin-top: 20px;">
-            <div class="stage-column" ondragover="allowDrop(event)" ondrop="drop(event, 'Box 1')"><div class="stage-header">Box 1</div></div>
-            <div class="stage-column" ondragover="allowDrop(event)" ondrop="drop(event, 'Box 2')"><div class="stage-header">Box 2</div></div>
-            <div class="stage-column" ondragover="allowDrop(event)" ondrop="drop(event, 'Box 3')"><div class="stage-header">Box 3</div></div>
-            <div class="stage-column" ondragover="allowDrop(event)" ondrop="drop(event, 'Box 4')"><div class="stage-header">Box 4</div></div>
-            <div class="stage-column" ondragover="allowDrop(event)" ondrop="drop(event, 'Box 5')"><div class="stage-header">Box 5</div></div>
-            <div class="stage-column" ondragover="allowDrop(event)" ondrop="drop(event, 'Box 6')"><div class="stage-header">Box 6</div></div>
+            <div class="stage-column" data-name="Box 1" ondragover="allowDrop(event)" ondrop="drop(event, 'Box 1')"><div class="stage-header">Box 1</div></div>
+            <div class="stage-column" data-name="Box 2" ondragover="allowDrop(event)" ondrop="drop(event, 'Box 2')"><div class="stage-header">Box 2</div></div>
+            <div class="stage-column" data-name="Box 3" ondragover="allowDrop(event)" ondrop="drop(event, 'Box 3')"><div class="stage-header">Box 3</div></div>
+            <div class="stage-column" data-name="Box 4" ondragover="allowDrop(event)" ondrop="drop(event, 'Box 4')"><div class="stage-header">Box 4</div></div>
+            <div class="stage-column" data-name="Box 5" ondragover="allowDrop(event)" ondrop="drop(event, 'Box 5')"><div class="stage-header">Box 5</div></div>
+            <div class="stage-column" data-name="Box 6" ondragover="allowDrop(event)" ondrop="drop(event, 'Box 6')"><div class="stage-header">Box 6</div></div>
+            <div class="stage-column" data-name="Box 7" ondragover="allowDrop(event)" ondrop="drop(event, 'Box 7')"><div class="stage-header">Box 7</div></div>
+            <div class="stage-column" data-name="Recepção" ondragover="allowDrop(event)" ondrop="drop(event, 'Recepção')"><div class="stage-header">Recepção</div></div>
+            <div class="stage-column" data-name="Corredor" ondragover="allowDrop(event)" ondrop="drop(event, 'Corredor')"><div class="stage-header">Corredor</div></div>
+            <div class="stage-column" data-name="Estacionamento" ondragover="allowDrop(event)" ondrop="drop(event, 'Estacionamento')"><div class="stage-header">Estacionamento</div></div>
         </div>
 
         <h3 style="text-align: center; color: #ff9900; border-bottom: 1px dashed #ff9900; padding-bottom: 10px; margin-top: 40px; margin-bottom: 15px;">AGENDA DA SEMANA (PRÓXIMOS 7 DIAS)</h3>
@@ -356,19 +360,29 @@
             });
         }
 
-        // 2. TORRE DE CONTROLE (AGORA COM AGENDA INCORPORADA DE FORMA INVISÍVEL PARA AS OUTRAS FUNÇÕES)
+        // 2. TORRE DE CONTROLE
         function allowDrop(ev) { ev.preventDefault(); }
         function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+        
         function drop(ev, boxName) {
             ev.preventDefault();
             const path = ev.dataTransfer.getData("text");
             const v = bancoVeiculos[path];
             
-            // Permite jogar na Agenda sem precisar fazer triagem antes. Mas para os Boxes, a regra da triagem continua valendo.
+            // Regra de triagem
             if(boxName !== 'Rodapé' && !boxName.startsWith('Agenda') && v.statusTracker < 2) return alert("Faça a Triagem clicando no veículo antes de mover para o Box!");
             
-            // Mantém a trava de 1 carro por Box, mas permite vários carros no mesmo dia da Agenda
-            if(ev.target.classList.contains('stage-column') && ev.target.querySelectorAll('.car-card').length > 0 && boxName !== 'Rodapé' && !boxName.startsWith('Agenda')) return alert("Este Box já tem veículo!");
+            // Regras de Capacidade (Limites inteligentes)
+            let maxCapacity = 1; // Padrão para Boxes 1 a 5
+            if (boxName === 'Box 6' || boxName === 'Box 7') maxCapacity = 2;
+            if (boxName === 'Corredor' || boxName === 'Estacionamento') maxCapacity = 7;
+            if (boxName === 'Recepção') maxCapacity = 99; // Sem limite prático
+            
+            let targetCol = ev.target.closest('.stage-column');
+            if(targetCol && boxName !== 'Rodapé' && !boxName.startsWith('Agenda')) {
+                let currentCars = targetCol.querySelectorAll('.car-card').length;
+                if(currentCars >= maxCapacity) return alert(`Limite atingido! ${boxName} aceita no máximo ${maxCapacity} veículo(s).`);
+            }
 
             db.ref('veiculos_ativos/' + path).update({ box: boxName, boxTime: Date.now() });
             addLog(`Gestor moveu ${v.modelo} para ${boxName}.`);
@@ -376,8 +390,14 @@
 
         function renderizarTorre() {
             const rodape = document.getElementById('rodape');
-            const boxes = document.querySelectorAll('.stage-column'); // Como a agenda tem class diferente, isso não interfere nos Boxes originais.
-            rodape.innerHTML = ""; boxes.forEach((b, i) => b.innerHTML = `<div class="stage-header">Box ${i+1}</div>`);
+            const boxes = document.querySelectorAll('.stage-column'); 
+            
+            // Limpa o rodapé e recria o cabeçalho respeitando o data-name
+            rodape.innerHTML = ""; 
+            boxes.forEach(b => {
+                let nomeBox = b.getAttribute('data-name');
+                b.innerHTML = `<div class="stage-header">${nomeBox}</div>`;
+            });
 
             // GERAÇÃO DINÂMICA DOS DIAS DA AGENDA
             const agendaContainer = document.getElementById('agenda-semana');
@@ -424,9 +444,6 @@
 
                 if(v.box === "Rodapé") {
                     rodape.appendChild(card);
-                } else if(v.box && v.box.startsWith("Box ")) {
-                    const idx = parseInt(v.box.replace("Box ", "")) - 1;
-                    if(boxes[idx]) boxes[idx].appendChild(card);
                 } else if(v.box && v.box.startsWith("Agenda ")) {
                     let alocadoNaAgenda = false;
                     const agendaCols = agendaContainer.querySelectorAll('.agenda-column');
@@ -436,11 +453,16 @@
                             alocadoNaAgenda = true;
                         }
                     });
-                    
-                    // MECÂNICA ANTI-ESQUECIMENTO: Se a data do card ficou no passado e a coluna não existe mais hoje, devolve para o Rodapé.
                     if(!alocadoNaAgenda) {
                         rodape.appendChild(card);
                     }
+                } else {
+                    // Busca a coluna correta pelo data-name do HTML
+                    boxes.forEach(col => {
+                        if(col.getAttribute('data-name') === v.box) {
+                            col.appendChild(card);
+                        }
+                    });
                 }
             });
         }
