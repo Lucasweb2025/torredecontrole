@@ -20,8 +20,12 @@
 
         body { background-color: var(--bg-color); color: white; font-family: var(--font-main); margin: 0; padding: 20px; overflow-x: hidden; }
         body::before { content: 'L.A. CUSTOM — MATRIZ'; position: fixed; inset: 0; z-index: -1; margin: auto; width: fit-content; height: fit-content; font-size: 4rem; font-weight: bold; opacity: 0.05; color: var(--neon-cyan); text-align: center; pointer-events: none; }
-        header { text-align: center; padding: 10px 0; border-bottom: 2px solid #333; margin-bottom: 20px; }
+        header { text-align: center; padding: 10px 0; border-bottom: 2px solid #333; margin-bottom: 20px; position: relative; }
         h1 { text-transform: uppercase; letter-spacing: 5px; color: var(--neon-cyan); text-shadow: 0 0 10px var(--neon-cyan); margin: 0; }
+
+        /* BOTÃO DE ACESSO */
+        .admin-lock { position: absolute; top: 10px; right: 10px; background: transparent; border: 1px solid #444; color: #666; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; transition: 0.3s; }
+        .admin-lock.unlocked { border-color: var(--neon-green); color: var(--neon-green); box-shadow: 0 0 10px rgba(57, 255, 20, 0.2); }
 
         .nav-bar { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; }
         .nav-btn { background: #111; color: white; border: 1px solid var(--neon-cyan); padding: 10px 20px; cursor: pointer; text-transform: uppercase; font-weight: bold; transition: 0.3s; }
@@ -106,6 +110,7 @@
 
     <header>
         <h1>PROJETO AGENDA - L.A. CUSTOM</h1>
+        <button id="adminBtn" class="admin-lock" onclick="toggleAdmin()">🔒 MODO LEITURA</button>
     </header>
 
     <div class="nav-bar">
@@ -117,7 +122,7 @@
     </div>
 
     <section id="sec-torre" class="view-section active">
-        <h3 style="text-align: center; color: #888;">Clique no veículo para Triagem/Qualidade ou Arraste para os Boxes</h3>
+        <h3 style="text-align: center; color: #888;">Clique no veículo para Detalhes ou Arraste para os Boxes</h3>
         
         <div style="color: var(--neon-cyan); margin-top: 10px; font-weight: bold;">AGUARDANDO TRIAGEM (Rodapé):</div>
         <div class="footer-agenda" id="rodape" ondragover="allowDrop(event)" ondrop="drop(event, 'Rodapé')"></div>
@@ -234,15 +239,15 @@
                 <span id="modal-descricao" style="color: #ddd; font-size: 0.9rem; line-height: 1.4;"></span>
             </div>
 
-            <div class="checkbox-group">
+            <div class="checkbox-group" id="group-triagem-checks">
                 <label><input type="checkbox" id="chk-desmontagem" value="Desmontagem" checked> 1. Iniciar Desmontagem</label>
                 <label><input type="checkbox" id="chk-descontaminacao" value="Descontaminação" checked> 2. Descontaminação</label>
                 <label><input type="checkbox" id="chk-ppf" value="Serviço Principal" checked> 3. Serviço Principal (PPF/Film)</label>
                 <label><input type="checkbox" id="chk-montagem" value="Montagem e Acabamento" checked> 4. Montagem e Acabamento</label>
                 <label><input type="checkbox" id="chk-qualidade" value="Enviar para Qualidade" checked> 5. Enviar para Qualidade</label>
             </div>
-            <button class="btn-save" onclick="salvarTriagem()">CONFIRMAR TRIAGEM (LIBERAR ARRASTO)</button>
-            <button class="btn-cancel" onclick="fecharModal()">Cancelar</button>
+            <button class="btn-save" id="btn-save-triagem" onclick="salvarTriagem()">CONFIRMAR TRIAGEM (LIBERAR ARRASTO)</button>
+            <button class="btn-cancel" onclick="fecharModal()">Sair/Cancelar</button>
         </div>
     </div>
 
@@ -300,6 +305,29 @@
         let uploadedPhotosIn = 0; let uploadedPhotosOut = 0;
         let trabalhoAbertoPath = "";
 
+        // SEGURANÇA: CONTROLE DE ADMIN
+        let isAuthorized = false;
+        const SENHA_MESTRA = "1234";
+
+        function toggleAdmin() {
+            if (!isAuthorized) {
+                let p = prompt("Digite a Senha do Gestor para liberar edições:");
+                if (p === SENHA_MESTRA) {
+                    isAuthorized = true;
+                    document.getElementById('adminBtn').innerText = "🔓 MODO GESTOR";
+                    document.getElementById('adminBtn').classList.add('unlocked');
+                    alert("Acesso Liberado! Agora você pode movimentar e salvar dados.");
+                } else {
+                    alert("Senha incorreta.");
+                }
+            } else {
+                isAuthorized = false;
+                document.getElementById('adminBtn').innerText = "🔒 MODO LEITURA";
+                document.getElementById('adminBtn').classList.remove('unlocked');
+                alert("Acesso bloqueado. Agora o sistema está em modo apenas visualização.");
+            }
+        }
+
         const AS_7_ETAPAS = ["OS Aberta no Sistema", "Triagem Concluída", "Preparação/Desmontagem", "Serviço Principal", "Montagem e Acabamento", "Controle de Qualidade", "Pronto para Retirada"];
 
         setInterval(() => { renderizarTorre(); }, 60000);
@@ -331,6 +359,7 @@
         });
 
         function abrirNovoCheckin() {
+            if(!isAuthorized) return alert("Ação bloqueada. Ative o MODO GESTOR no topo da página.");
             document.getElementById('container-btn-novo').style.display = 'none';
             document.getElementById('container-formulario').style.display = 'block';
         }
@@ -340,6 +369,7 @@
         function uploadPhotoIn(el) { if(!el.classList.contains('uploaded')) { el.classList.add('uploaded'); el.innerText = "✓ OK"; uploadedPhotosIn++; } }
 
         function submitChecklist() {
+            if(!isAuthorized) return alert("Ação bloqueada. Ative o MODO GESTOR no topo da página.");
             const osManual = document.getElementById('chk-os-manual').value;
             if(!osManual) { alert("Atenção: Por favor, digite o Número da OS antes de continuar."); return; }
             if (uploadedPhotosIn < 12) { if(!confirm("Aviso: Faltam fotos. Isso quebra o protocolo de segurança. Confirma?")) return; }
@@ -369,6 +399,7 @@
         
         function drop(ev, boxName) {
             ev.preventDefault();
+            if(!isAuthorized) return alert("Movimentação bloqueada. Ative o MODO GESTOR no topo da página.");
             const path = ev.dataTransfer.getData("text");
             const v = bancoVeiculos[path];
             if(boxName !== 'Rodapé' && !boxName.startsWith('Agenda') && v.statusTracker < 2) return alert("Faça a Triagem clicando no veículo antes de mover para o Box!");
@@ -422,15 +453,14 @@
                     if(v.statusTracker === 1) abrirModalTriagem(v.osPath);
                     else if(v.statusTracker === 5) abrirModalQualidade(v.osPath);
                     else if(v.statusTracker === 6) abrirModalCheckout(v.osPath);
-                    else alert("Veículo no Box. Aguardando o técnico.");
+                    else alert("Veículo em andamento. Clique para ver detalhes.");
                 };
 
                 let hint = "↔️ Arraste para o Box";
-                if(v.statusTracker === 1) hint = "👆 CLIQUE PARA TRIAGEM";
+                if(v.statusTracker === 1) hint = "👆 TRIAGEM / DETALHES";
                 if(v.statusTracker === 5) hint = "✅ AGUARDANDO QUALIDADE";
                 if(v.statusTracker === 6) hint = "🟠 PRONTO P/ ENTREGA (CLIQUE)";
 
-                // CARD ATUALIZADO: Nome do cliente removido, Serviço em destaque neon suave
                 card.innerHTML = `
                     <div class="timer-badge">⏱️ ${calcularTempo(v.boxTime)}</div>
                     <span class="os-number">${v.os} | Placa: ${v.placa}</span>
@@ -467,12 +497,17 @@
             document.getElementById('modal-cliente').innerText = "👤 " + (v.cliente || "Cliente Expresso");
             document.getElementById('modal-hora').innerText = "⏱️ Aberto às " + (v.horaAbertura || "--:--");
             document.getElementById('modal-descricao').innerText = v.descricao || "Sem descrição.";
+            
+            // DESABILITA BOTÃO SE NÃO FOR ADMIN
+            document.getElementById('btn-save-triagem').style.display = isAuthorized ? 'block' : 'none';
+
             document.getElementById('triagemModal').style.display = 'flex';
         }
 
         function fecharModal() { document.getElementById('triagemModal').style.display = 'none'; }
         
         function salvarTriagem() {
+            if(!isAuthorized) return alert("Bloqueado.");
             let passos = [];
             if(document.getElementById('chk-desmontagem').checked) passos.push("Iniciar Desmontagem");
             if(document.getElementById('chk-descontaminacao').checked) passos.push("Concluir Descontaminação");
@@ -538,6 +573,7 @@
         }
 
         function advanceDynamicStep(path, stepIndex, nomePasso) {
+            if(!isAuthorized) return alert("Apenas Gestores autorizados podem concluir etapas.");
             let v = bancoVeiculos[path];
             let newStatus = v.statusTracker;
             if (nomePasso.includes("Desmontagem") || nomePasso.includes("Descontaminação")) newStatus = 3;
@@ -549,6 +585,7 @@
 
         function undoDynamicStep(event, path, stepIndex) {
             event.stopPropagation();
+            if(!isAuthorized) return alert("Bloqueado.");
             let v = bancoVeiculos[path];
             let newStatus = v.statusTracker > 2 ? v.statusTracker - 1 : 2;
             db.ref('veiculos_ativos/' + path).update({ ultimoPassoConcluido: stepIndex - 1, statusTracker: newStatus });
@@ -561,8 +598,13 @@
             document.getElementById('qualidadeModal').style.display = 'flex';
         }
         function fecharModalQualidade() { document.getElementById('qualidadeModal').style.display = 'none'; }
-        function aprovarQualidade() { db.ref('veiculos_ativos/' + currentOSPath).update({ statusTracker: 6 }); fecharModalQualidade(); }
+        
+        function aprovarQualidade() { 
+            if(!isAuthorized) return alert("Apenas Gestores podem aprovar.");
+            db.ref('veiculos_ativos/' + currentOSPath).update({ statusTracker: 6 }); fecharModalQualidade(); 
+        }
         function reprovarQualidade() { 
+            if(!isAuthorized) return alert("Bloqueado.");
             let v = bancoVeiculos[currentOSPath]; 
             db.ref('veiculos_ativos/' + currentOSPath).update({ statusTracker: 4, ultimoPassoConcluido: v.etapas.length - 2 }); 
             fecharModalQualidade(); 
@@ -578,6 +620,7 @@
         function uploadPhotoOut(el) { if(!el.classList.contains('uploaded')) { el.classList.add('uploaded'); el.innerText = "✓ OK"; uploadedPhotosOut++; } }
 
         function finalizarCheckout() {
+            if(!isAuthorized) return alert("Apenas Gestores podem finalizar veículos.");
             let km = document.getElementById('chk-km-saida').value;
             if(!km || !document.getElementById('chk-pertences').checked || !document.getElementById('chk-servicos').checked) return alert("Preencha KM e confirme os serviços!");
             let fotosOk = uploadedPhotosOut >= 12;
@@ -591,7 +634,7 @@
                 document.getElementById('chk-km-saida').value = ''; 
                 document.getElementById('chk-pertences').checked = false; 
                 document.getElementById('chk-servicos').checked = false;  
-                document.querySelectorAll('#photoGridOut .photo-slot').forEach(s => s.classList.remove('uploaded')); 
+                document.querySelectorAll('#photoGridOut .photo-slot').forEach(s => s.classList.remove('unloaded')); 
                 uploadedPhotosOut = 0;
             }).catch(erro => alert("Erro ao arquivar: " + erro.message));
         }
