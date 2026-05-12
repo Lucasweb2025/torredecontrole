@@ -49,8 +49,11 @@
         .status-quality { border-left-color: var(--neon-green) !important; background: rgba(57, 255, 20, 0.1) !important; animation: pulse-green-card 2s infinite; }
         @keyframes pulse-green-card { 0% { box-shadow: 0 0 5px var(--neon-green); } 50% { box-shadow: 0 0 20px var(--neon-green); } 100% { box-shadow: 0 0 5px var(--neon-green); } }
 
-        /* NOVO CSS: BADGE DE TEMPO */
+        /* NOVO CSS: BADGE DE TEMPO E AGENDA */
         .timer-badge { font-size: 0.65rem; background: #222; color: var(--neon-cyan); padding: 2px 6px; border-radius: 4px; position: absolute; top: 10px; right: 10px; border: 1px dashed #444; }
+        
+        .agenda-column { flex: 1; background: rgba(255, 255, 255, 0.02); border-radius: 8px; border: 1px dashed #ff9900; display: flex; flex-direction: column; padding: 10px; min-width: 160px; transition: 0.3s; }
+        .agenda-column:hover { background: rgba(255, 153, 0, 0.05); }
 
         .footer-agenda { margin-top: 20px; border-top: 1px solid #333; padding-top: 20px; min-height: 120px; background: #111; display: flex; gap: 15px; padding: 15px; border: 1px dashed #444; overflow-x: auto;}
         .log-panel { margin-top: 20px; background: #000; border: 1px solid #333; padding: 15px; height: 120px; overflow-y: auto; font-size: 0.8rem; color: #aaa; }
@@ -142,6 +145,9 @@
             <div class="stage-column" ondragover="allowDrop(event)" ondrop="drop(event, 'Box 6')"><div class="stage-header">Box 6</div></div>
         </div>
 
+        <h3 style="text-align: center; color: #ff9900; border-bottom: 1px dashed #ff9900; padding-bottom: 10px; margin-top: 40px; margin-bottom: 15px;">AGENDA DA SEMANA (PRÓXIMOS 7 DIAS)</h3>
+        <div class="dashboard" id="agenda-semana" style="height: auto; min-height: 20vh; padding-bottom: 10px;">
+            </div>
         <div class="log-panel" id="logPanel">
             <div class="log-entry"><span>[Sistema]</span> Torre na Nuvem Inicializada. Cronômetros Ativos.</div>
         </div>
@@ -288,7 +294,7 @@
 
         const AS_7_ETAPAS = ["OS Aberta no Sistema", "Triagem Concluída", "Preparação/Desmontagem", "Serviço Principal", "Montagem e Acabamento", "Controle de Qualidade", "Pronto para Retirada"];
 
-        // RELÓGIO DE PRODUTIVIDADE
+        // RELÓGIO DE PRODUTIVIDADE E DA AGENDA
         setInterval(() => { renderizarTorre(); }, 60000);
         function calcularTempo(ts) {
             if(!ts) return "0m";
@@ -350,15 +356,19 @@
             });
         }
 
-        // 2. TORRE DE CONTROLE
+        // 2. TORRE DE CONTROLE (AGORA COM AGENDA INCORPORADA DE FORMA INVISÍVEL PARA AS OUTRAS FUNÇÕES)
         function allowDrop(ev) { ev.preventDefault(); }
         function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
         function drop(ev, boxName) {
             ev.preventDefault();
             const path = ev.dataTransfer.getData("text");
             const v = bancoVeiculos[path];
-            if(boxName !== 'Rodapé' && v.statusTracker < 2) return alert("Faça a Triagem clicando no veículo antes de mover para o Box!");
-            if(ev.target.classList.contains('stage-column') && ev.target.querySelectorAll('.car-card').length > 0 && boxName !== 'Rodapé') return alert("Este Box já tem veículo!");
+            
+            // Permite jogar na Agenda sem precisar fazer triagem antes. Mas para os Boxes, a regra da triagem continua valendo.
+            if(boxName !== 'Rodapé' && !boxName.startsWith('Agenda') && v.statusTracker < 2) return alert("Faça a Triagem clicando no veículo antes de mover para o Box!");
+            
+            // Mantém a trava de 1 carro por Box, mas permite vários carros no mesmo dia da Agenda
+            if(ev.target.classList.contains('stage-column') && ev.target.querySelectorAll('.car-card').length > 0 && boxName !== 'Rodapé' && !boxName.startsWith('Agenda')) return alert("Este Box já tem veículo!");
 
             db.ref('veiculos_ativos/' + path).update({ box: boxName, boxTime: Date.now() });
             addLog(`Gestor moveu ${v.modelo} para ${boxName}.`);
@@ -366,9 +376,24 @@
 
         function renderizarTorre() {
             const rodape = document.getElementById('rodape');
-            const boxes = document.querySelectorAll('.stage-column');
+            const boxes = document.querySelectorAll('.stage-column'); // Como a agenda tem class diferente, isso não interfere nos Boxes originais.
             rodape.innerHTML = ""; boxes.forEach((b, i) => b.innerHTML = `<div class="stage-header">Box ${i+1}</div>`);
 
+            // GERAÇÃO DINÂMICA DOS DIAS DA AGENDA
+            const agendaContainer = document.getElementById('agenda-semana');
+            agendaContainer.innerHTML = "";
+            const diasSemana = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+            for (let i = 0; i < 7; i++) {
+                let data = new Date();
+                data.setDate(data.getDate() + i);
+                let dataStr = `${String(data.getDate()).padStart(2, '0')}/${String(data.getMonth() + 1).padStart(2, '0')}`;
+                let idDrop = `Agenda ${dataStr}`;
+                agendaContainer.innerHTML += `<div class="agenda-column" ondragover="allowDrop(event)" ondrop="drop(event, '${idDrop}')">
+                    <div class="stage-header" style="color: #ff9900;">${diasSemana[data.getDay()]} - ${dataStr}</div>
+                </div>`;
+            }
+
+            // RENDERIZAÇÃO DOS CARDS
             Object.values(bancoVeiculos).forEach(v => {
                 const card = document.createElement('div');
                 card.className = "car-card";
@@ -397,10 +422,25 @@
                     <span class="click-hint">${hint}</span>
                 `;
 
-                if(v.box === "Rodapé") rodape.appendChild(card);
-                else {
+                if(v.box === "Rodapé") {
+                    rodape.appendChild(card);
+                } else if(v.box && v.box.startsWith("Box ")) {
                     const idx = parseInt(v.box.replace("Box ", "")) - 1;
                     if(boxes[idx]) boxes[idx].appendChild(card);
+                } else if(v.box && v.box.startsWith("Agenda ")) {
+                    let alocadoNaAgenda = false;
+                    const agendaCols = agendaContainer.querySelectorAll('.agenda-column');
+                    agendaCols.forEach(col => {
+                        if (col.getAttribute('ondrop').includes(v.box)) {
+                            col.appendChild(card);
+                            alocadoNaAgenda = true;
+                        }
+                    });
+                    
+                    // MECÂNICA ANTI-ESQUECIMENTO: Se a data do card ficou no passado e a coluna não existe mais hoje, devolve para o Rodapé.
+                    if(!alocadoNaAgenda) {
+                        rodape.appendChild(card);
+                    }
                 }
             });
         }
@@ -426,7 +466,7 @@
             fecharModal(); addLog(`Triagem de ${currentModel} salva.`);
         }
 
-        // 3. ABA DO TÉCNICO (O SEU DESIGN ORIGINAL)
+        // 3. ABA DO TÉCNICO
         function renderizarFilaTecnico() {
             let container = document.getElementById('fila-cards-tecnico');
             container.innerHTML = "";
@@ -438,7 +478,7 @@
                 card.onclick = () => abrirExecucaoTecnico(v.osPath);
                 card.innerHTML = `
                     <span class="os-number">${v.os}</span><div class="car-model">${v.modelo}</div>
-                    <div style="color: var(--neon-cyan); font-size: 0.8rem; margin-top: 5px;">📍 Local: ${v.box === 'Rodapé' ? 'Aguardando Gestor Mover' : v.box}</div>
+                    <div style="color: var(--neon-cyan); font-size: 0.8rem; margin-top: 5px;">📍 Local: ${v.box === 'Rodapé' || v.box.startsWith('Agenda') ? 'Aguardando Gestor Mover para o Box' : v.box}</div>
                     <span class="click-hint" style="background: var(--neon-green); color: black; font-weight: bold; margin-top: 10px;">👆 ENTRAR NO SERVIÇO</span>
                 `;
                 container.appendChild(card);
@@ -535,8 +575,6 @@
             const v = bancoVeiculos[currentOSPath];
             if (!v) return alert("Erro interno: Veículo não encontrado no sistema.");
 
-            // PROTEÇÃO: O Firebase trava silenciosamente se receber um campo "undefined".
-            // Os operadores ' || "" ' garantem que, se faltar um dado antigo, ele salve sem travar a tela.
             const entrega = { 
                 os: v.os || "S/N", 
                 placa: v.placa || "S/N", 
@@ -552,12 +590,11 @@
                 db.ref('veiculos_ativos/' + currentOSPath).remove();
                 fecharModalCheckout(); 
                 document.getElementById('chk-km-saida').value = ''; 
-                document.getElementById('chk-pertences').checked = false; // Resetando o checkbox para o próximo carro
-                document.getElementById('chk-servicos').checked = false;  // Resetando o checkbox para o próximo carro
+                document.getElementById('chk-pertences').checked = false; 
+                document.getElementById('chk-servicos').checked = false;  
                 document.querySelectorAll('#photoGridOut .photo-slot').forEach(s => s.classList.remove('uploaded')); 
                 uploadedPhotosOut = 0;
             }).catch(erro => {
-                // Se der qualquer outro erro na nuvem, agora ele te avisa na tela!
                 alert("Erro ao tentar arquivar no banco de dados: " + erro.message);
             });
         }
@@ -578,7 +615,7 @@
             document.getElementById('cliente-tracker-info').innerText = `${v.os} | ${v.modelo} | Placa: ${v.placa}`;
             container.innerHTML = "";
             let st = v.statusTracker;
-            if(st > 5) st = 5; // Limitar ao visual do cliente
+            if(st > 5) st = 5; 
 
             AS_7_ETAPAS.forEach((titulo, idx) => {
                 let passoNum = idx + 1;
