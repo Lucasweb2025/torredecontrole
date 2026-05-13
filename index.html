@@ -44,7 +44,9 @@
         .os-number { font-size: 0.7rem; color: var(--neon-cyan); font-weight: bold; }
         .car-model { font-size: 1rem; margin: 5px 0 5px 0; font-weight: bold; }
         
-        .service-preview { font-size: 0.75rem; color: #00ffff; font-style: italic; margin-bottom: 5px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; border-top: 1px dashed #333; padding-top: 5px; }
+        .service-preview { font-size: 0.75rem; color: #00ffff; font-style: italic; margin-bottom: 5px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.3; border-top: 1px dashed #333; padding-top: 5px; white-space: pre-wrap; }
+        
+        .delivery-date-badge { font-size: 0.8rem; color: #ff9900; font-weight: bold; margin-top: 5px; border-top: 1px dashed #444; padding-top: 5px; display: block; }
 
         .click-hint { font-size: 0.65rem; color: var(--neon-cyan); margin-top: 8px; display: inline-block; background: #222; padding: 2px 6px; border-radius: 3px; }
 
@@ -159,6 +161,7 @@
             <div style="border: 1px dashed var(--neon-cyan); padding: 15px; margin-bottom: 20px; background: rgba(0, 255, 255, 0.05);">
                 <div class="form-group"><label>Número da OS</label><input type="text" id="chk-os-manual" placeholder="Ex: 1055" style="font-size: 1.2rem; font-weight: bold; color: var(--neon-cyan);"></div>
                 <div class="form-group"><label>Descrição do Serviço Solicitado</label><textarea id="chk-descricao" placeholder="Ex: Lavagem detalhada, vitrificação e PPF frontal." rows="3" style="resize: vertical;"></textarea></div>
+                <div class="form-group"><label>📅 Previsão de Entrega (Agenda de Giro)</label><input type="date" id="chk-entrega"></div>
             </div>
 
             <div style="border: 1px dashed var(--neon-green); padding: 15px; margin-bottom: 20px; background: rgba(57,255,20,0.05);">
@@ -223,22 +226,60 @@
         </div>
     </section>
 
+    <div class="modal-overlay" id="detalhesModal">
+        <div class="modal-content" style="max-width: 500px; border-color: var(--neon-cyan);">
+            <h2 class="modal-title">DETALHES DA OPERAÇÃO</h2>
+            
+            <div class="form-group">
+                <label>Modelo do Veículo</label>
+                <input type="text" id="edit-modelo">
+            </div>
+            
+            <div class="form-group">
+                <label>Placa</label>
+                <input type="text" id="edit-placa">
+            </div>
+
+            <div class="form-group">
+                <label>Cliente</label>
+                <input type="text" id="edit-cliente">
+            </div>
+
+            <div class="form-group">
+                <label>WhatsApp</label>
+                <input type="tel" id="edit-whatsapp">
+            </div>
+
+            <div class="form-group">
+                <label style="color: #ff9900; font-weight: bold;">📅 Nova Previsão de Entrega</label>
+                <input type="date" id="edit-entrega">
+            </div>
+
+            <div class="form-group">
+                <label style="color: var(--neon-cyan); font-weight: bold;">🛠️ LISTA DE SERVIÇOS (Editar/Atualizar)</label>
+                <textarea id="edit-descricao" rows="6" style="width: 100%; background: #000; color: #fff; border: 1px solid #444; padding: 10px; font-family: sans-serif; line-height: 1.5;"></textarea>
+            </div>
+
+            <div id="area-botoes-edicao">
+                <button class="btn-save" onclick="salvarEdicaoOS()">💾 SALVAR ALTERAÇÕES</button>
+                <button class="btn-cancel" onclick="fecharModalDetalhes()">FECHAR SEM SALVAR</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="triagemModal">
         <div class="modal-content">
             <h2 class="modal-title">TRIAGEM DE SERVIÇOS</h2>
-            
             <div style="margin-bottom: 15px; color: #aaa; border-bottom: 1px dashed #333; padding-bottom: 15px;">
                 <strong id="modal-os" style="color: var(--neon-cyan); font-size: 1.2rem;">OS</strong>
                 <span style="float: right; font-size: 0.8rem; background: #222; padding: 2px 6px; border-radius: 4px;" id="modal-hora">00:00</span><br>
                 <span style="color: white; font-weight: bold; font-size: 1.1rem; display: block; margin-top: 5px;" id="modal-cliente">Cliente</span>
                 <span id="modal-modelo">Veículo</span>
             </div>
-
             <div style="margin-bottom: 20px; background: #000; padding: 10px; border: 1px solid #333; border-radius: 4px;">
                 <label style="color: var(--neon-cyan); font-size: 0.8rem; font-weight: bold; display: block; margin-bottom: 5px;">DESCRIÇÃO DO SERVIÇO SOLICITADO:</label>
                 <span id="modal-descricao" style="color: #ddd; font-size: 0.9rem; line-height: 1.4;"></span>
             </div>
-
             <div class="checkbox-group" id="group-triagem-checks">
                 <label><input type="checkbox" id="chk-desmontagem" value="Desmontagem" checked> 1. Iniciar Desmontagem</label>
                 <label><input type="checkbox" id="chk-descontaminacao" value="Descontaminação" checked> 2. Descontaminação</label>
@@ -246,7 +287,7 @@
                 <label><input type="checkbox" id="chk-montagem" value="Montagem e Acabamento" checked> 4. Montagem e Acabamento</label>
                 <label><input type="checkbox" id="chk-qualidade" value="Enviar para Qualidade" checked> 5. Enviar para Qualidade</label>
             </div>
-            <button class="btn-save" id="btn-save-triagem" onclick="salvarTriagem()">CONFIRMAR TRIAGEM (LIBERAR ARRASTO)</button>
+            <button class="btn-save" id="btn-save-triagem" onclick="salvarTriagem()">CONFIRMAR TRIAGEM</button>
             <button class="btn-cancel" onclick="fecharModal()">Sair/Cancelar</button>
         </div>
     </div>
@@ -266,13 +307,11 @@
         <div class="modal-content" style="border-color: #ff9900; max-width: 500px; box-shadow: 0 0 30px rgba(255, 153, 0, 0.2);">
             <h2 class="modal-title" style="color: #ff9900; border-bottom-color: #333;">CHECK-OUT E ENTREGA</h2>
             <div style="margin-bottom: 15px; color: #aaa;"><strong id="modal-checkout-os" style="color: white;">OS</strong><br><span id="modal-checkout-modelo">Veículo</span></div>
-            
             <div class="form-group"><label style="color: #ff9900;">KM de Saída:</label><input type="number" id="chk-km-saida" placeholder="Ex: 15000"></div>
             <div class="checkbox-group">
                 <label><input type="checkbox" id="chk-pertences"> Pertences e chaves devolvidos?</label>
                 <label><input type="checkbox" id="chk-servicos"> Aprovação de todos os serviços?</label>
             </div>
-
             <label style="color: #ff9900; display: block; font-size: 0.9rem;">📸 Fotos de Saída (Prova do Depois)</label>
             <div class="photo-grid" id="photoGridOut">
                 <div class="photo-slot" onclick="uploadPhotoOut(this)">Frente</div><div class="photo-slot" onclick="uploadPhotoOut(this)">Traseira</div>
@@ -305,7 +344,6 @@
         let uploadedPhotosIn = 0; let uploadedPhotosOut = 0;
         let trabalhoAbertoPath = "";
 
-        // SEGURANÇA: CONTROLE DE ADMIN
         let isAuthorized = false;
         const SENHA_MESTRA = "1234";
 
@@ -317,9 +355,7 @@
                     document.getElementById('adminBtn').innerText = "🔓 MODO GESTOR";
                     document.getElementById('adminBtn').classList.add('unlocked');
                     alert("Acesso Liberado! Agora você pode movimentar e salvar dados.");
-                } else {
-                    alert("Senha incorreta.");
-                }
+                } else { alert("Senha incorreta."); }
             } else {
                 isAuthorized = false;
                 document.getElementById('adminBtn').innerText = "🔒 MODO LEITURA";
@@ -378,6 +414,7 @@
             const modelo = (document.getElementById('chk-modelo').value || "VEÍCULO") + " (" + (document.getElementById('chk-cor').value || "Indefinida") + ")";
             const placa = document.getElementById('chk-placa').value || "SEM PLACA";
             const descricaoServico = document.getElementById('chk-descricao').value || "Nenhuma descrição informada.";
+            const entregaPrevista = document.getElementById('chk-entrega').value || "Data não definida";
 
             const id = "OS_" + Date.now();
             const osDisplay = "OS #" + osManual;
@@ -385,12 +422,13 @@
 
             const dados = {
                 os: osDisplay, osPath: id, cliente: nome, whatsapp: zap, placa: placa, modelo: modelo,
-                descricao: descricaoServico, horaAbertura: horaAtual,
-                statusTracker: 1, box: "Rodapé", checkinTime: Date.now(), boxTime: Date.now(), tecnico: "Aguardando", isError: uploadedPhotosIn < 12
+                descricao: descricaoServico, horaAbertura: horaAtual, entregaPrevista: entregaPrevista,
+                statusTracker: 1, box: "Rodapé", checkinTime: Date.now(), boxTime: Date.now(), tecnico: "Aguardando", isError: uploadedPhotosIn < 12,
+                ultimoPassoConcluido: -1
             };
 
             db.ref('veiculos_ativos/' + id).set(dados).then(() => {
-                addLog(`✅ ${osDisplay} gerada para ${modelo}.`); alert("OS Aberta! Vá para a Torre."); cancelarCheckin(); switchTab('sec-torre', document.getElementById('btn-torre'));
+                addLog(`✅ ${osDisplay} gerada para ${modelo}. Saída: ${entregaPrevista}`); alert("OS Aberta! Vá para a Torre."); cancelarCheckin(); switchTab('sec-torre', document.getElementById('btn-torre'));
             });
         }
 
@@ -449,24 +487,36 @@
                 if(v.isError) card.classList.add('status-alert');
                 if(v.statusTracker === 5) card.classList.add('status-quality');
 
-                card.onclick = () => {
-                    if(v.statusTracker === 1) abrirModalTriagem(v.osPath);
-                    else if(v.statusTracker === 5) abrirModalQualidade(v.osPath);
-                    else if(v.statusTracker === 6) abrirModalCheckout(v.osPath);
-                    else alert("Veículo em andamento. Clique para ver detalhes.");
-                };
+                card.onclick = () => { abrirModalDetalhes(v.osPath); };
 
-                let hint = "↔️ Arraste para o Box";
+                // LOGICA DE ETAPA ATUAL (O QUE O CARRO ESTÁ FAZENDO)
+                let etapaAtual = "Aguardando...";
+                if(v.statusTracker === 1) etapaAtual = "Aguardando Triagem";
+                else if(v.statusTracker === 5) etapaAtual = "Inspeção de Qualidade";
+                else if(v.statusTracker === 6) etapaAtual = "Pronto para Retirada";
+                else if(v.etapas && v.etapas[v.ultimoPassoConcluido + 1]) {
+                    etapaAtual = "Em: " + v.etapas[v.ultimoPassoConcluido + 1];
+                } else if(v.statusTracker >= 2) {
+                    etapaAtual = "Em Preparação";
+                }
+
+                let hint = ""; 
                 if(v.statusTracker === 1) hint = "👆 TRIAGEM / DETALHES";
                 if(v.statusTracker === 5) hint = "✅ AGUARDANDO QUALIDADE";
                 if(v.statusTracker === 6) hint = "🟠 PRONTO P/ ENTREGA (CLIQUE)";
+
+                let dataFormatada = v.entregaPrevista ? v.entregaPrevista.split('-').reverse().join('/') : "A definir";
 
                 card.innerHTML = `
                     <div class="timer-badge">⏱️ ${calcularTempo(v.boxTime)}</div>
                     <span class="os-number">${v.os} | Placa: ${v.placa}</span>
                     <div class="car-model">${v.modelo}</div>
-                    <div class="service-preview">${v.descricao || "Sem descrição."}</div>
-                    <span class="click-hint">${hint}</span>
+                    
+                    <!-- NOVO: O QUE O CARRO ESTÁ FAZENDO (ETAPA ATUAL) -->
+                    <div style="font-size: 0.7rem; color: var(--neon-green); margin-top: 2px; font-weight: bold; text-transform: uppercase;">⚡ ${etapaAtual}</div>
+                    
+                    <span class="delivery-date-badge">🗓️ Saída: ${dataFormatada}</span>
+                    ${hint ? `<span class="click-hint">${hint}</span>` : ""}
                 `;
 
                 if(v.box === "Rodapé") {
@@ -497,10 +547,7 @@
             document.getElementById('modal-cliente').innerText = "👤 " + (v.cliente || "Cliente Expresso");
             document.getElementById('modal-hora').innerText = "⏱️ Aberto às " + (v.horaAbertura || "--:--");
             document.getElementById('modal-descricao').innerText = v.descricao || "Sem descrição.";
-            
-            // DESABILITA BOTÃO SE NÃO FOR ADMIN
             document.getElementById('btn-save-triagem').style.display = isAuthorized ? 'block' : 'none';
-
             document.getElementById('triagemModal').style.display = 'flex';
         }
 
@@ -516,6 +563,53 @@
             if(document.getElementById('chk-qualidade').checked) passos.push("Enviar para Qualidade");
             db.ref('veiculos_ativos/' + currentOSPath).update({ statusTracker: 2, etapas: passos, ultimoPassoConcluido: -1 });
             fecharModal(); addLog(`Triagem de ${currentModel} salva.`);
+        }
+
+        function abrirModalDetalhes(path) {
+            const v = bancoVeiculos[path];
+            if (!v) return;
+            currentOSPath = path;
+            
+            document.getElementById('edit-modelo').value = v.modelo || "";
+            document.getElementById('edit-placa').value = v.placa || "";
+            document.getElementById('edit-cliente').value = v.cliente || "";
+            document.getElementById('edit-whatsapp').value = v.whatsapp || "";
+            document.getElementById('edit-descricao').value = v.descricao || "";
+            document.getElementById('edit-entrega').value = v.entregaPrevista || "";
+
+            const areaBotoes = document.getElementById('area-botoes-edicao');
+            let btnAcaoEspecial = "";
+            if(v.statusTracker === 1) btnAcaoEspecial = `<button class="btn-save" style="background:#ff9900; color:black; margin-bottom:10px;" onclick="fecharModalDetalhes(); abrirModalTriagem('${path}')">⚙️ FAZER TRIAGEM AGORA</button>`;
+            if(v.statusTracker === 5) btnAcaoEspecial = `<button class="btn-save" style="background:var(--neon-green); color:black; margin-bottom:10px;" onclick="fecharModalDetalhes(); abrirModalQualidade('${path}')">✅ AVALIAR QUALIDADE</button>`;
+            if(v.statusTracker === 6) btnAcaoEspecial = `<button class="btn-save" style="background:#ff9900; color:black; margin-bottom:10px;" onclick="fecharModalDetalhes(); abrirModalCheckout('${path}')">🟠 FINALIZAR ENTREGA</button>`;
+            
+            areaBotoes.innerHTML = btnAcaoEspecial + `
+                <button class="btn-save" onclick="salvarEdicaoOS()">💾 SALVAR ALTERAÇÕES</button>
+                <button class="btn-cancel" onclick="fecharModalDetalhes()">FECHAR SEM SALVAR</button>
+            `;
+
+            const btnSave = areaBotoes.querySelector('.btn-save:last-of-type');
+            if(btnSave) btnSave.style.display = isAuthorized ? 'block' : 'none';
+
+            document.getElementById('detalhesModal').style.display = 'flex';
+        }
+
+        function fecharModalDetalhes() { document.getElementById('detalhesModal').style.display = 'none'; }
+
+        function salvarEdicaoOS() {
+            if (!isAuthorized) return alert("Apenas Gestores autorizados.");
+            const novosDados = {
+                modelo: document.getElementById('edit-modelo').value,
+                placa: document.getElementById('edit-placa').value,
+                cliente: document.getElementById('edit-cliente').value,
+                whatsapp: document.getElementById('edit-whatsapp').value,
+                descricao: document.getElementById('edit-descricao').value,
+                entregaPrevista: document.getElementById('edit-entrega').value
+            };
+            db.ref('veiculos_ativos/' + currentOSPath).update(novosDados).then(() => {
+                addLog(`📝 OS Atualizada: ${novosDados.modelo}. Nova Saída: ${novosDados.entregaPrevista}`);
+                fecharModalDetalhes();
+            });
         }
 
         function renderizarFilaTecnico() {
@@ -553,7 +647,6 @@
             container.innerHTML = "";
             let v = bancoVeiculos[trabalhoAbertoPath];
             if(!v || !v.etapas) return;
-
             v.etapas.forEach((nomePasso, stepIndex) => {
                 let btn = document.createElement('button');
                 if (stepIndex <= v.ultimoPassoConcluido) {
@@ -634,13 +727,14 @@
                 document.getElementById('chk-km-saida').value = ''; 
                 document.getElementById('chk-pertences').checked = false; 
                 document.getElementById('chk-servicos').checked = false;  
-                document.querySelectorAll('#photoGridOut .photo-slot').forEach(s => s.classList.remove('unloaded')); 
+                document.querySelectorAll('#photoGridOut .photo-slot').forEach(s => s.classList.remove('uploaded')); 
                 uploadedPhotosOut = 0;
             }).catch(erro => alert("Erro ao arquivar: " + erro.message));
         }
 
         function atualizarDropdownCliente() {
             let sel = document.getElementById('select-os-cliente');
+            if(!sel) return;
             sel.innerHTML = '<option value="">-- Selecione a OS --</option>';
             Object.values(bancoVeiculos).forEach(v => { sel.innerHTML += `<option value="${v.osPath}">${v.os} | ${v.placa}</option>`; });
             if(Object.keys(bancoVeiculos).length > 0 && sel.value === "") { sel.value = Object.keys(bancoVeiculos)[0]; renderizarVisaoCliente(); }
@@ -665,7 +759,7 @@
 
         function switchTab(id, btn) { document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active')); document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active')); document.getElementById(id).classList.add('active'); btn.classList.add('active'); if(id==='sec-cliente')atualizarDropdownCliente();}
         function limparFormularioCheckin() { 
-            ['chk-os-manual','chk-descricao','chk-nome','chk-whatsapp','chk-placa','chk-modelo','chk-cor'].forEach(i => {
+            ['chk-os-manual','chk-descricao','chk-nome','chk-whatsapp','chk-placa','chk-modelo','chk-cor', 'chk-entrega'].forEach(i => {
                 let el = document.getElementById(i);
                 if(el) el.value='';
             }); 
